@@ -1,0 +1,31 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block body %}
+<div class="intro-header">
+<div class="container">
+    <br><br><br>
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+        <div class="card card-signup">
+
+            <div class="header header-info text-center">
+              <h4>Sign Up on WatchDog</h4>
+
+            </div>
+            <div class="content text-left">
+                {{ wtf.quick_form(form, button_map={'submit' : 'info'}) }}
+
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+<div class="intro-header">
+    <div class="container">
+        <br><br><br>
+        <div class="row">
+            <div class="col-md-12 text-center">
+
+                    <h1> WATCHDOG </h1>h1>           
+                
+                    <a href="{{ url_for('signup') }}" class="btn btn-info btn-raised btn-lg w3-animate-left">
+                        <i></i> Sign Up
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-info btn-raised btn-lg w3-animate-right">
+                            <i></i> Login
+                        </a>
+
+            </div>
+        </div>
+    </div>
+    <br><br><br>
+</div>
+
+
+<div class="main main-raised w3-animate-bottom">
+        <div class="container">
+            <div class="section text-center section-landing">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h2 class="title">Sign Up. Fall In Love. Unite in Marriage.</h2>
+                        <h5 class="description">Bringing people together since 2017.</h5>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info">
+                                <div class="icon icon-primary">
+                                    <i class="material-icons">chat</i>
+                                </div>
+                                <h4 class="info-title">Messaging Feature</h4>
+                                <p>Send messages to other users and have conversations before deciding to marry them. </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info">
+                                <div class="icon icon-success">
+                                    <i class="material-icons">verified_user</i>
+                                </div>
+                                <h4 class="info-title">Privacy</h4>
+                                <p>Ensure security by setting different levels of privacy to your details. </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info">
+                                <div class="icon icon-info">
+                                    <i class="material-icons">search</i>
+                                </div>
+                                <h4 class="info-title">Advanced Search</h4>
+                                <p>Search our vast database for the partner you are looking for. Click on Success Stories to read about all the couples we've matched!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+{% endblock %}

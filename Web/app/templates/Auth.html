@@ -1,0 +1,65 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+{% block title %}Authenticated{% endblock %}
+{% block body %}
+
+<link rel=stylesheet type="text/css" href="../static/assets/css/image.css">
+
+<div class="intro-header">
+        <div class="container">
+            <br><br><br><br><br>
+            {{ utils.flashed_messages() }}
+            <div class="row">
+              <div class="col-md-10 col-md-offset-2 col-sm-6 col-sm-offset-3">
+                <div class="card card-signup">
+                  
+                    <div class="header header-info text-center">
+                      <h4>Add Authenticated Members</h4>
+                    </div>
+                    <div class="col-md-12">
+                            <div class="col-md-12">
+                                    {% for pic in x: %}
+                                    <div class="image floated_img" >
+                                      {{ pic.person_name }}  
+                                      <img src= {{ pic.image_path }} id="myImage" class="img-rounded img-raised object-fit_cover"  width="120" >
+                                    </div>
+                                    {% endfor %}
+                                    </div>
+                    <div class="content text-left">
+                        
+                        
+                            <form method="post" enctype=multipart/form-data>
+                                    {{ form.hidden_tag() }}
+                                    {{ form.name()}}
+                                    {{ form.image(multiple="multiple", class_="btn btn-info btn-round text-center" ) }}
+                                    {{ form.submit(class_="btn btn-info btn-round text-center") }}
+                                    {{ form.skip(class_="btn btn-info btn-round text-center") }}
+                            </form>
+                        
+                            
+                            <a class="btn btn-info btn-round text-center" data-toggle="modal" href="{{ url_for('deleteImages') }}">
+                                    Delete Images
+                                </a>
+                                <a class="btn btn-info btn-round text-center" data-toggle="modal" href="{{ url_for('train') }}">
+                                    Train Images
+                                </a>
+                              
+
+                      
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+
+<style> 
+.floated_img
+{
+    float: left;
+}
+</style>
+{% endblock %}
