@@ -28,7 +28,6 @@
                               <thead>
                                   <tr>
 
-                                      <th class="text-left">Name</th>
                                       <th class="text-left">Image</th>
                                       <th class="text-left">Check</th>
                                   </tr>
@@ -40,7 +39,6 @@
                               <tbody>
                                       {% for pic in pics | reverse %}
                               <tr>
-                                  <td> {{ pic.person_name }} </td>
                                   <td>  <img src= {{ pic.image_path }} id="myImage" class="img-rounded img-raised object-fit_cover"  width="120" > </td>
                                   <td> <input type="checkbox" id="id_{{ pic.imgid }}" name="users" value="{{ pic.imgid }}"> </td>
                               {% endfor %}
@@ -50,8 +48,11 @@
                              
                                  </table>
                                 </div>
-                                
-                                <button class="btn btn-danger btn-round" type="submit" name="submit" value="submit">Delete Pictures</button>
+                                <a class="btn btn-info btn-round text-center"  href="{{ url_for('addPics' , user = user1 ) }}">
+                                    Add more Images
+                                </a>
+
+                                <button class="btn btn-info btn-round" type="submit" name="submit" value="submit">Delete Pictures</button>
                             </form>
                             </div>
                       

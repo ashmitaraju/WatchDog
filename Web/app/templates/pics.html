@@ -15,34 +15,23 @@
                 <div class="card card-signup">
                   
                     <div class="header header-info text-center">
-                      <h4>Add Authenticated Members</h4>
+                      <h4>Add Pictures</h4>
                     </div>
                     <div class="col-md-12">
                             <div class="col-md-12">
-                                    {% for pic in x: %}
-                                    <div class="image floated_img" >
-                                      <a href="{{ url_for('viewPerson' , user =pic.person_id) }}" >{{pic.person_name}} </a>
-                                      <br>           
-                                      </div>
-                                    {% endfor %}
-                                    </div>
+                                    
                     <div class="content text-left">
                         
                         
                             <form method="post" enctype=multipart/form-data>
                                     {{ form.hidden_tag() }}
-                                    {{ form.name() }}
-              
-                                    {{ form.submit(class_="btn btn-info btn-round text-center") }}
+                                    {{ form.image(multiple="multiple" ) }}
+                                    {{ form.picture(class_="btn btn-info btn-round text-center") }}
+                                    {{ form.skip(class_="btn btn-info btn-round text-center") }}
                             </form>
                         
-                          <a class="btn btn-info btn-round text-center"  href="{{ url_for('train') }}">
-                              Train New Images
-                          </a>
-                          <a class="btn btn-info btn-round text-center"  href="{{ url_for('dashboard') }}">
-                            Back
-                        </a>
-                      
+                            
+                            
                               
 
                       

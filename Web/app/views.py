@@ -133,54 +133,24 @@ def train():
 def uploadImages():
     count = 0
     pics = []
-    x = db.session.query(Persons.person_name,AuthImageGallery.image_path).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username).all()
+    #x = db.session.query(Persons.person_name,Persons.person_id,AuthImageGallery.image_path).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username).all()
+    x = Persons.query.filter_by(username = current_user.username).all()
     print x
     form = EditImageGalleryForm()
-
     
-    if form.submit.data or form.skip.data or form.picture.data:
-        response = json.loads (addPerson (current_user.username, form.name.data, form.name.data))
-        person_id = response["personId"]
-        person = Persons(person_name = form.name.data, username = current_user.username, azure_id = person_id)
-        db.session.add(person)
+    if form.submit.data: #adding another person    
+        add_person = Persons(person_name = form.name.data, username = current_user.username)
+        print form.name.data
+        db.session.add(add_person)
         db.session.commit()
+        return redirect(url_for('addPics' , user = add_person.person_id))
 
-
-        if form.picture.data: 
-            print "picture"
-            
-            naam = form.name.data
-            takePicture(naam)
-
-        print "hello"
-        if 'image' in request.files:
-
-            for f in request.files.getlist('image'):
-                print f
-                if f.filename:
-                    print "hi"
-                    filename = secure_filename(f.filename)
-                    #path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-                    block_blob_service.create_blob_from_stream('video', filename, f)
-                    #f.save(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
-                    url = "https://sokvideoanalyze8b05.blob.core.windows.net/video/" + filename
-
-                    person = Persons.query.filter_by(person_name = form.name.data).first()
-                    image = AuthImageGallery(image_filename= filename, image_path= url, person_id = person.person_id )
-                    db.session.add(image)
-                    db.session.commit()
-                    print "done"
-            if form.submit.data:
-                return redirect(url_for('uploadImages'))
-            if form.skip.data:
-                return redirect(url_for('dashboard'))
-                    
     return render_template('Auth.html' , form = form, x = x)
 
 @app.route('/deleteImages', methods=['GET', 'POST'])
 @login_required
 def deleteImages():
-    pics = db.session.query(Persons.person_name, AuthImageGallery.imgid , AuthImageGallery.image_filename,AuthImageGallery.image_path).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username).all()
+    pics = db.session.query(Persons.person_name, Persons.person_id, AuthImageGallery.imgid , AuthImageGallery.image_filename,AuthImageGallery.image_path).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username).all()
     print pics
     delPics = []
     if request.method == "POST":

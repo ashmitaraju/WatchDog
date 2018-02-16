@@ -1,7 +1,5 @@
 import httplib, urllib, base64
 
-
-
 headers = {
     # Request headers
     'Content-Type': 'application/json',
