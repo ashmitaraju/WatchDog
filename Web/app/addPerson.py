@@ -1,4 +1,5 @@
 import httplib, urllib, base64
+import json
 
 
 headers = {
@@ -23,4 +24,4 @@ def addPerson (GROUP_ID, PERSON_NAME, PERSON_DATA ):
     data = response.read()
     print "person id = " + data
     conn.close()
-    return data
+    return json.loads ( data )

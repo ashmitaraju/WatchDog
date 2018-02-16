@@ -31,12 +31,12 @@
                         
                             <form method="post" enctype=multipart/form-data>
                                     {{ form.hidden_tag() }}
-                                    {{ form.name() }}
+                                    {{ form.name(class_="form-control") }}
               
                                     {{ form.submit(class_="btn btn-info btn-round text-center") }}
                             </form>
                         
-                          <a class="btn btn-info btn-round text-center"  href="{{ url_for('train') }}">
+                          <a class="btn btn-info btn-round text-center"  href="{{ url_for('TrainFaces') }}">
                               Train New Images
                           </a>
                           <a class="btn btn-info btn-round text-center"  href="{{ url_for('dashboard') }}">

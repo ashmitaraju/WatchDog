@@ -20,6 +20,7 @@ def trainFaces ( GROUP_ID ):
     conn.request("POST", "/face/v1.0/persongroups/%s/train" %personGroupId, body, headers)
     response = conn.getresponse()
     data = response.read()
+    
     print "person id = " + data
     conn.close()
     return response.status

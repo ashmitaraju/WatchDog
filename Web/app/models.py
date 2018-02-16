@@ -76,6 +76,7 @@ class AuthImageGallery(UserMixin, db.Model):
     person_id = db.Column(db.Integer, db.ForeignKey("persons.person_id", ondelete='CASCADE'), nullable = False)
     image_filename = db.Column(db.String(60), default= None, nullable= False)
     image_path = db.Column(db.Text, default= None, nullable = False)
+    training_status = db.Column(db.Text, nullable = False )
 
     def __repr(self):
         return '<AuthImageGallery :{}>'.format(self.username)

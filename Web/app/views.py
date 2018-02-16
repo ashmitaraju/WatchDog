@@ -16,6 +16,7 @@ from trainFaces import trainFaces
 from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
 import json
+import httplib, urllib, base64
 
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
 
@@ -139,14 +140,15 @@ def uploadImages():
     form = EditImageGalleryForm()
     
     if form.submit.data: #adding another person    
-        add_person = Persons(person_name = form.name.data, username = current_user.username)
+        code = addPerson ( current_user.username, form.name.data, form.name.data)
+        add_person = Persons(person_name = form.name.data, username = current_user.username, azure_id = code["personId"])
         print form.name.data
         db.session.add(add_person)
         db.session.commit()
         return redirect(url_for('addPics' , user = add_person.person_id))
 
     return render_template('Auth.html' , form = form, x = x)
-
+"""
 @app.route('/deleteImages', methods=['GET', 'POST'])
 @login_required
 def deleteImages():
@@ -166,21 +168,22 @@ def deleteImages():
             db.session.commit()
         return redirect(url_for('uploadImages'))
     return render_template('deleteImages.html' , pics = pics)
-
+"""
 
 @app.route('/TrainFaces', methods=['GET', 'POST'])
 @login_required
 def TrainFaces():
 
-    faces =  db.session.query(Persons.username,AuthImageGallery.image_path, AuthImageGallery.azure_id ).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username, AuthImageGallery.training_status == 'false').all()
+    faces =  db.session.query(Persons.username,AuthImageGallery.image_path, Persons.azure_id ).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username, AuthImageGallery.training_status == 'false').all()
 
     for face in faces:
-        addFace(str(face[0] , str(face[2]), str(face[1])))
+        addFace(str(face[0]) , str(face[2]), str(face[1]))
 
     
 
     code = trainFaces (current_user.username)
-    if code == 200:
+    print code
+    if code == 202:
         resp = "Successfully Trained!"
 
         notTrained = AuthImageGallery.query.filter_by(training_status = 'false')
@@ -192,9 +195,65 @@ def TrainFaces():
         resp = "Training Failed."
 
     flash ( resp )
-    return redirect(url_for('dashboard.html'))
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/viewPerson/<user>' , methods = ['GET' , 'POST'])
+@login_required
+def viewPerson(user):
+    print user 
+    listPics = AuthImageGallery.query.filter_by(person_id = user)
+    print listPics
+
+    delPics = []
+    if request.method == "POST":
+        delPics = request.form.getlist('users')
+    print delPics 
+    if delPics:
+        for f in delPics:
+            print f
+            img = AuthImageGallery.query.filter_by(imgid = f).first()
+            block_blob_service.delete_blob('video', img.image_filename)
+            #os.remove(os.path.join(app.config['UPLOADED_IMAGES_DEST'], img.image_filename))
+            db.session.delete(img)
+            db.session.commit()
+        return redirect(url_for('uploadImages'))
+    return render_template('deleteImages.html' , pics = listPics, user1 = user)
+
+
+
+@app.route('/addPics/<user>' , methods = ['GET' , 'POST'])
+@login_required
+def addPics(user):
+
+    current_person = Persons.query.filter_by(person_id = user).first() 
+
+    form = EditImageGalleryForm()
+
+    if form.picture.data: 
+        print "picture"
+        naam = current_person.person_name
+        takePicture(naam)
     
+    if form.skip.data: 
+        
+        if 'image' in request.files:
 
+            for f in request.files.getlist('image'):
+                print f
+                if f.filename:
+                    print "hi"
+                    filename = secure_filename(f.filename)
+                    #path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+                    block_blob_service.create_blob_from_stream('video', filename, f)
+                    #f.save(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
+                    url = "https://sokvideoanalyze8b05.blob.core.windows.net/video/" + filename
 
+                    person = Persons.query.filter_by(person_id = user).first()
+                    image = AuthImageGallery(image_filename= filename, image_path= url, person_id = person.person_id, training_status = 'false' )
+                    db.session.add(image)
+                    db.session.commit()
+                    print "done"
+        return redirect(url_for('dashboard'))
 
-    
+    return render_template('pics.html', form = form)
