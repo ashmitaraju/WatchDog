@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from createPerson import createPerson
+from createGroup import createGroup
 from azure.storage.blob import BlockBlobService , ContentSettings
 
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
@@ -28,11 +28,11 @@ def signup():
     form = SignUpForm()
     if form.validate_on_submit():
         user = Users(email=form.email.data, username=form.username.data, password=form.password.data)
+        code = createGroup (form.username.data, form.email.data, form.username.data)
         
         db.session.add(user)
         db.session.commit()
-        user = Users.query.filter_by(username = form.username.data).first()
-        code = createGroup (form.username.data, form.email.data, str(user.id)) # creates a Person group on Azure Face
+    
         print code
 
         login_user(user)
@@ -150,7 +150,7 @@ def uploadImages():
                     block_blob_service.create_blob_from_stream('video', filename, f)
                     #f.save(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
                     url = "https://sokvideoanalyze8b05.blob.core.windows.net/video/" + filename
-                    
+
                     person = Persons.query.filter_by(person_name = form.name.data).first()
                     image = AuthImageGallery(image_filename= filename, image_path= url, person_id = person.person_id )
                     db.session.add(image)
