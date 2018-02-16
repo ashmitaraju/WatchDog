@@ -31,8 +31,9 @@
                         
                             <form method="post" enctype=multipart/form-data>
                                     {{ form.hidden_tag() }}
-                                    {{ form.name()}}
-                                    {{ form.image(multiple="multiple", class_="btn btn-info btn-round text-center" ) }}
+                                    {{ form.name(class_="form-control")}}
+                                    {{ form.image(multiple="multiple" ) }}
+                                    {{ form.picture(class_="btn btn-info btn-round text-center") }}
                                     {{ form.submit(class_="btn btn-info btn-round text-center") }}
                                     {{ form.skip(class_="btn btn-info btn-round text-center") }}
                             </form>
