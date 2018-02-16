@@ -1,5 +1,7 @@
 import httplib, urllib, base64
 
+
+
 headers = {
     # Request headers
     'Content-Type': 'application/json',
@@ -7,19 +9,18 @@ headers = {
 }
 
 
-def verifyFace(faceIds, GROUP_ID):
+def createGroup ( GROUP_ID, PERSON_NAME, PERSON_DATA):
+    personGroupId = GROUP_ID
 
-    ids = str (faceIds)
-   # print ids
-    body = "{ 'personGroupId':'%s', 'faceIds': %s, 'maxNumOfCandidatesReturned':1, 'confidenceThreshold': 0.5 } " %(GROUP_ID, ids)
+    body = "{ 'name': '%s', 'userData': '%s' }" %( PERSON_NAME , PERSON_DATA)
 
-    #print body
+    print body
 
     conn = httplib.HTTPSConnection('westcentralus.api.cognitive.microsoft.com')
-    conn.request("POST", "/face/v1.0/identify" , body, headers)
+    conn.request("PUT", "/face/v1.0/persongroups/%s" %personGroupId, body, headers)
     response = conn.getresponse()
     data = response.read()
-    #print (data) + "hey"
-    
+    print "person id = " + data
     conn.close()
-    return data
+    return response.status
+
