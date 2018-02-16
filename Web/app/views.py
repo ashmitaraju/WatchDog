@@ -10,6 +10,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from createGroup import createGroup
+from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
 
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
@@ -132,14 +133,20 @@ def uploadImages():
     print x
     form = EditImageGalleryForm()
 
-        
+    if form.picture.data: 
+        print "picture"
+        person = Persons(person_name = form.name.data, username = current_user.username)
+        db.session.add(person)
+        db.session.commit()
+        naam = form.name.data
+        takePicture(naam)
+
     if form.submit.data or form.skip.data: 
+        print "hello"
         person = Persons(person_name = form.name.data, username = current_user.username)
         db.session.add(person)
         db.session.commit()   
         if 'image' in request.files:
-            print "hey"
-            print( request.files.getlist('image') )
 
             for f in request.files.getlist('image'):
                 print f
