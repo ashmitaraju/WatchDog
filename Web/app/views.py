@@ -10,8 +10,12 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from createGroup import createGroup
+from addPerson import addPerson
+from addFace import addFace
+from trainFaces import trainFaces
 from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
+import json
 
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
 
@@ -133,19 +137,22 @@ def uploadImages():
     print x
     form = EditImageGalleryForm()
 
-    if form.picture.data: 
-        print "picture"
-        person = Persons(person_name = form.name.data, username = current_user.username)
+    
+    if form.submit.data or form.skip.data or form.picture.data:
+        response = json.loads (addPerson (current_user.username, form.name.data, form.name.data))
+        person_id = response["personId"]
+        person = Persons(person_name = form.name.data, username = current_user.username, azure_id = person_id)
         db.session.add(person)
         db.session.commit()
-        naam = form.name.data
-        takePicture(naam)
 
-    if form.submit.data or form.skip.data: 
+
+        if form.picture.data: 
+            print "picture"
+            
+            naam = form.name.data
+            takePicture(naam)
+
         print "hello"
-        person = Persons(person_name = form.name.data, username = current_user.username)
-        db.session.add(person)
-        db.session.commit()   
         if 'image' in request.files:
 
             for f in request.files.getlist('image'):
@@ -189,3 +196,35 @@ def deleteImages():
             db.session.commit()
         return redirect(url_for('uploadImages'))
     return render_template('deleteImages.html' , pics = pics)
+
+
+@app.route('/TrainFaces', methods=['GET', 'POST'])
+@login_required
+def TrainFaces():
+
+    faces =  db.session.query(Persons.username,AuthImageGallery.image_path, AuthImageGallery.azure_id ).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username, AuthImageGallery.training_status == 'false').all()
+
+    for face in faces:
+        addFace(str(face[0] , str(face[2]), str(face[1])))
+
+    
+
+    code = trainFaces (current_user.username)
+    if code == 200:
+        resp = "Successfully Trained!"
+
+        notTrained = AuthImageGallery.query.filter_by(training_status = 'false')
+        
+        for face in notTrained:
+            face.training_status = 'true'
+            db.session.commit()
+    else :
+        resp = "Training Failed."
+
+    flash ( resp )
+    return redirect(url_for('dashboard.html'))
+    
+
+
+
+    

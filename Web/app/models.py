@@ -65,6 +65,7 @@ class Persons(UserMixin, db.Model):
     person_id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(60), db.ForeignKey("users.username", ondelete='CASCADE'), nullable = False)
     person_name = db.Column(db.String(60), nullable = False)
+    azure_id = db.Column(db.String(60), nullable = False)
     
     def __repr(self):
         return '<Persons :{}>'.format(self.username)

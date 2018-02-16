@@ -11,8 +11,24 @@ import cv2
 import urllib2
 import numpy as np
 
+import MySQLdb
 
-database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'} 
+db = MySQLdb.connect("watchdogserver.mysql.database.azure.com","aravindbs@watchdogserver","Watchdog123","watchdog" )
+cursor = db.cursor()
+
+query = """select azure_id, person_name from Persons, AuthImageGallery
+         where Persons.person_id=AuthImageGallery.person_id 
+         and Persons.person_id=current_user.username"""
+
+results = cursor.fetchall()
+
+database = {}
+for result in results:
+    database[result[0]] = result[1]
+
+
+    
+#database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'} 
 def sendFrames(sendQueue, responseQueue):
 
     while True:
@@ -120,6 +136,7 @@ if __name__ == '__main__':
         analyseFacesProcess.start()
         
         ''' start ipStream'''
+    
         host = "192.168.31.116:8080"
       #  if len(sys.argv)>1:
        #     host = sys.argv[1]
@@ -151,6 +168,7 @@ if __name__ == '__main__':
         
 
         '''end ip stream'''
+        
 
 
 

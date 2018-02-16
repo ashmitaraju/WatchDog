@@ -6,3 +6,4 @@ testPictures
 .gitignore
 faceDetectAWS.py
 .git
+Web/migrations
