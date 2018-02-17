@@ -13,7 +13,7 @@
                 <div class="card card-signup">
                   
                     <div class="header header-danger text-center">
-                      <h4>Uploaded Images</h4>
+                      <h4>Delete Images</h4>
                      
                     </div>
                     <div class="content text-left">
@@ -29,7 +29,7 @@
                                   <tr>
 
                                       <th class="text-left">Image</th>
-                                      <th class="text-left">Check</th>
+                                      <th class="text-left">Timestamp</th>
                                   </tr>
                               </thead>
 
@@ -40,7 +40,7 @@
                                       {% for pic in pics | reverse %}
                               <tr>
                                   <td>  <img src= {{ pic.image_path }} id="myImage" class="img-rounded img-raised object-fit_cover"  width="120" > </td>
-                                  <td> <input type="checkbox" id="id_{{ pic.imgid }}" name="users" value="{{ pic.imgid }}"> </td>
+                                  <td> {{ pic.timestamp }} </td>
                               {% endfor %}
                               </tr>
                             </tbody>
@@ -48,11 +48,11 @@
                              
                                  </table>
                                 </div>
-                                <a class="btn btn-info btn-round text-center"  href="{{ url_for('addPics' , user = user1 ) }}">
-                                    Add more Images
+                                <a class="btn btn-info btn-round text-center"  href="{{ url_for('dashboard') }}">
+                                    Back
                                 </a>
 
-                                <button class="btn btn-info btn-round" type="submit" name="submit" value="submit">Delete Pictures</button>
+                                
                             </form>
                             </div>
                       
