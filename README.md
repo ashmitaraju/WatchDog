@@ -2,6 +2,8 @@
 
 **WatchDog** is a smart surveillance system that leverages the power of computer vision and cloud computing technology to automatically scan video streams or frames from Closed-circuit television (CCTV) or Web cameras to detected intruders and unauthorized individuals and alert immediately to take appropriate action.
 
+[Try it out yourself!](http://watchdogsok.pythonanywhere.com/)
+
 ## FaceAPI
 WatchDog makes use of the Azure Face API to train and recognize the faces of trusted individuals and to simultaneously alert appropriately if an unknown individual, (potentially maliciously) is encountered.
 
