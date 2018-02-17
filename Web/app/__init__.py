@@ -4,7 +4,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_uploads import UploadSet, IMAGES, configure_uploads
-from flask_azure_storage import create_all
+#from flask_azure_storage import create_all
 import os
 
 db = SQLAlchemy()

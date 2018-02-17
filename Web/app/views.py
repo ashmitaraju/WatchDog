@@ -11,12 +11,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 #from createGroup import createGroup
 #from addPerson import addPerson
-from face-api import addFace, addPerson, createGroup, trainFaces
+from faceapi import addFace, addPerson, createGroup, trainFaces
 #from trainFaces import trainFaces
 from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
 import json
-import httplib, urllib, base64
+import httplib, urllib, base64, yaml
 
 with open("../config.yaml", "r") as f:
     config = yaml.load(f)
