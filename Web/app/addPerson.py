@@ -1,5 +1,4 @@
 import httplib, urllib, base64
-import json
 
 
 headers = {
@@ -8,7 +7,7 @@ headers = {
     'Ocp-Apim-Subscription-Key': '863007e7f6dd4cfab18e3de9c8fb1fbd',
 }
 
-def addPerson (GROUP_ID, PERSON_NAME, PERSON_DATA ):
+def addPerson ( GROUP_ID, PERSON_NAME, PERSON_DATA ):
     params = urllib.urlencode({ 'personGroupId' : GROUP_ID
     })
 
@@ -24,4 +23,4 @@ def addPerson (GROUP_ID, PERSON_NAME, PERSON_DATA ):
     data = response.read()
     print "person id = " + data
     conn.close()
-    return json.loads ( data )
+    return datac

@@ -1,8 +1,8 @@
 from multiprocessing import Process, Queue
 from frameGrabber import getFrame
-from faceDetectAzure import getFace
-from faceVerify import verifyFace
-from personDetect import getPerson
+#from faceDetectAzure import getFace
+from faceVerify import verifyFace, getFace, getPerson
+#from personDetect import getPerson
 from datetime import datetime
 import os
 import signal
@@ -10,15 +10,30 @@ import json
 import cv2
 import urllib2
 import numpy as np
-
+from azure.storage.blob import BlockBlobService , ContentSettings
 import MySQLdb
+import yaml
+import re
 
-db = MySQLdb.connect("watchdogserver.mysql.database.azure.com","aravindbs@watchdogserver","Watchdog123","watchdog" )
+
+with open("config.yaml", "r") as f:
+    config = yaml.load(f)
+
+
+userName = 'ashmita'
+block_blob_service = BlockBlobService(account_name= config['azure-blob']['account_name'] , account_key= config['azure-blob']['account_key'])
+
+sql = config['mysql']
+db = MySQLdb.connect( sql['server'] ,sql['username'] , sql['password'] ,sql['database'] )
 cursor = db.cursor()
+
+
 
 query = """select azure_id, person_name from Persons, AuthImageGallery
          where Persons.person_id=AuthImageGallery.person_id 
-         and Persons.person_id=current_user.username"""
+         and Persons.username= '%s'""" %userName
+
+cursor.execute( query )
 
 results = cursor.fetchall()
 
@@ -84,7 +99,7 @@ def sendFaces (sendFaceQueue, responseFaceQueue):
         frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
         response = getFace(frameBytes)
        # print response
-        responseFaceQueue.put(response)
+        responseFaceQueue.put([response , frameBytes])
 
 
 def analyseFaces (sendFaceQueue, responseFaceQueue):
@@ -93,11 +108,13 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
             pass  
         response = responseFaceQueue.get()
         faceIds = []
-        if response:
-            for face in response:
+        if response[0]:
+            for face in response[0]:
+                print face
                 fid = str (face["faceId"])
+                print fid
                 faceIds.append(fid)
-                verified = json.loads (verifyFace(faceIds , '02'))
+                verified = verifyFace(faceIds , userName)
                # print type ( verified )
                 
                 if verified:
@@ -110,6 +127,18 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                                 print database[found]
 
                         else :
+                            filename = str(datetime.now())
+                            filename = re.sub(r' ', '_', filename)
+                            print filename
+
+                            block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
+                            url = "https://sokvideoanalyze8b05.blob.core.windows.net/unauthorized/%s" % filename
+                            query = """insert into UnauthImageGallery(username, image_filename, image_path) values('%s', '%s', '%s')"""%( userName, filename, url)
+                            #query = """select * from Persons"""
+                            print query
+                            cursor.execute( query )
+                            db.commit()
+                            print cursor.fetchall()
                             print "face not authorized"
 
         else :
@@ -137,7 +166,9 @@ if __name__ == '__main__':
         
         ''' start ipStream'''
     
-        host = "192.168.31.116:8080"
+        host = config['IPcam']['hostIP']
+        print host
+	
       #  if len(sys.argv)>1:
        #     host = sys.argv[1]
 

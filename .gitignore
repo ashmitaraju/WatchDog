@@ -7,3 +7,5 @@ testPictures
 faceDetectAWS.py
 .git
 Web/migrations
+config.yaml
+.gitignore

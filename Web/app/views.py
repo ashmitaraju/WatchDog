@@ -9,14 +9,17 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from createGroup import createGroup
-from addPerson import addPerson
-from addFace import addFace
-from trainFaces import trainFaces
+#from createGroup import createGroup
+#from addPerson import addPerson
+from face-api import addFace, addPerson, createGroup, trainFaces
+#from trainFaces import trainFaces
 from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
 import json
 import httplib, urllib, base64
+
+with open("../config.yaml", "r") as f:
+    config = yaml.load(f)
 
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
 

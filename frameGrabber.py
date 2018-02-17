@@ -4,7 +4,7 @@ import urllib2
 import numpy as np
 
 
-
+'''
 host = "192.168.31.116:8080"
 #if len(sys.argv)>1:
  #   host = sys.argv[1]
@@ -13,7 +13,7 @@ hoststr = 'http://' + host + '/videofeed'
 print 'Streaming ' + hoststr
 
 stream = urllib2.urlopen(hoststr)
-
+'''
 cam = cv2.VideoCapture(0)
 
 def getFrame():
