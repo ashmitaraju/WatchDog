@@ -4,6 +4,7 @@
 
 [Try it out yourself!](http://watchdogsok.pythonanywhere.com/)
 
+
 ## FaceAPI
 WatchDog makes use of the Azure Face API to train and recognize the faces of trusted individuals and to simultaneously alert appropriately if an unknown individual, (potentially maliciously) is encountered.
 
@@ -15,4 +16,12 @@ Raspberry Pi 3s fitted with Cameras are used for surveillance. The Pis are progr
 
 ### Motivation
 This project was created by a team of students from R V College of Engineering, as a part of Microsoft Academia Accelerator Program's contest, code.fun.do.
+
+### Instructions
+1. Clone the repository 
+2. Install the requirements specified in requirements.txt
+3. Place the [config](https://1drv.ms/u/s!AuPyeSIGdEA3gygMFeZu3PDK2XCg) file in the root directory
+4. Sign up on the [website](http://watchdogsok.pythonanywhere.com/) and train the API with authorized faces.
+5. Run videoAnalyser.py <username>. Username is sys.argv[1] and should be the same as the one entered during SignUp.
+6. This script will open the webcam which will emulate the CCTV cameras. 
 
