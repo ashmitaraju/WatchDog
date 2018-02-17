@@ -127,13 +127,13 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                                 print database[found]
 
                         else :
-                            filename = str(datetime.now())
-                            filename = re.sub(r' ', '_', filename)
+                            timestamp = str(datetime.now())
+                            filename = re.sub(r' ', '_', timestamp)
                             print filename
 
                             block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
                             url = "https://sokvideoanalyze8b05.blob.core.windows.net/unauthorized/%s" % filename
-                            query = """insert into UnauthImageGallery(username, image_filename, image_path) values('%s', '%s', '%s')"""%( userName, filename, url)
+                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp) values('%s', '%s', '%s' , '%s')"""%( userName, filename, url, timestamp)
                             #query = """select * from Persons"""
                             print query
                             cursor.execute( query )

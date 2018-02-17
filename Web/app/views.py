@@ -146,6 +146,7 @@ def uploadImages():
     if form.submit.data: #adding another person    
         code = addPerson ( current_user.username, form.name.data, form.name.data)
         add_person = Persons(person_name = form.name.data, username = current_user.username, azure_id = code["personId"])
+        print code
         print form.name.data
         db.session.add(add_person)
         db.session.commit()
