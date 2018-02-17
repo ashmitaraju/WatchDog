@@ -45,7 +45,7 @@ def signup():
         print code
 
         login_user(user)
-        flash('Registration Successful! You may now create your profile.')
+        flash('Registration Successful! You may now create your profile.' , 'success')
         return redirect(url_for('editProfile'))
     return render_template('signup.html', title='Sign Up', form = form)
 
@@ -123,8 +123,9 @@ def cameraDetails():
 @app.route('/unAuth' , methods = ['GET' , 'POST'])
 @login_required
 def unAuth():
-    form = EditImageGalleryForm()
-    return render_template('Auth.html', form = form)
+    
+    pics = UnauthImageGallery.query.filter_by(username = current_user.username).all()
+    return render_template('Unauth.html', pics = pics)
 
 @app.route('/train' , methods = ['GET' , 'POST'])
 @login_required
@@ -232,12 +233,13 @@ def addPics(user):
     current_person = Persons.query.filter_by(person_id = user).first() 
 
     form = EditImageGalleryForm()
-
+    """
     if form.picture.data: 
         print "picture"
         naam = current_person.person_name
-        takePicture(naam)
-    
+        takePicture(naam)   
+    """
+
     if form.skip.data: 
         
         if 'image' in request.files:

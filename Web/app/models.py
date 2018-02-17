@@ -71,7 +71,7 @@ class Persons(UserMixin, db.Model):
         return '<Persons :{}>'.format(self.username)
 
 class AuthImageGallery(UserMixin, db.Model):
-    __tablename__= 'AuthImageGallery'
+    __tablename__= 'authImageGallery'
     imgid = db.Column(db.Integer, primary_key=True)
     person_id = db.Column(db.Integer, db.ForeignKey("persons.person_id", ondelete='CASCADE'), nullable = False)
     image_filename = db.Column(db.String(60), default= None, nullable= False)
@@ -82,12 +82,13 @@ class AuthImageGallery(UserMixin, db.Model):
         return '<AuthImageGallery :{}>'.format(self.username)
 
 class UnauthImageGallery(UserMixin, db.Model):
-    __tablename__= 'UnauthImageGallery'
+    __tablename__= 'unauthImageGallery'
 
     imgid = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), db.ForeignKey("users.username", ondelete='CASCADE'), nullable = True , unique = False)
     image_filename = db.Column(db.String(60), default= None, nullable= False)
     image_path = db.Column(db.Text, default= None, nullable = False)
+    timestamp = db.Column(db.Text, nullable = False)
 
     def __repr(self):
         return '<UnauthImageGallery :{}>'.format(self.username)
