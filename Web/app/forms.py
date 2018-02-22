@@ -10,7 +10,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from app import images
 
 def myvalidator(form, field):
-    
+
     if not form.image.data:
 
         field.errors[:] = []
@@ -36,16 +36,16 @@ class SignUpForm(Form):
         if Users.query.filter_by(username=field.data).first():
             raise ValidationError('Username is already in use')
 
-class EditProfileForm(Form): 
+class EditProfileForm(Form):
     first_name = TextField('First Name', validators = [InputRequired()])
     last_name = TextField('Last Name', validators = [Optional()])
     submit = SubmitField('Save')
 
 class EditImageGalleryForm(Form):
-    
-    name = TextField('Name', validators = [InputRequired()])
+
+    name = StringField('Add New Person', validators = [InputRequired()])
     image = FileField('Upload Picture(s)', validators=[myvalidator, Optional() , FileAllowed(images, 'Image only!')])
     picture = SubmitField('Take Pictures')
-    submit = SubmitField('Add Another Person')
+    submit = SubmitField('Add Images')
     skip = SubmitField('Submit')
 

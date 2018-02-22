@@ -14,13 +14,14 @@ from azure.storage.blob import BlockBlobService , ContentSettings
 import MySQLdb
 import yaml
 import re
+import sys
 
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
 
 
-userName = 'ashmita'
+userName = sys.argv[1]
 block_blob_service = BlockBlobService(account_name= config['azure-blob']['account_name'] , account_key= config['azure-blob']['account_key'])
 
 sql = config['mysql']
@@ -50,12 +51,10 @@ def sendFrames(sendQueue, responseQueue):
         while sendQueue.empty():
             pass  
         img = sendQueue.get()    
-       # print type (img)
         cv2.imshow("Sent Frame",img)
         cv2.waitKey(5)
         frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
         response = getPerson (frameBytes)
-       # print response
         responseQueue.put([response , img])
     
 
@@ -66,8 +65,6 @@ def analyseResponses(sendQueue, responseQueue):
             pass  
         response = responseQueue.get()
 
-        faceList = [] # index 0 is the JSON Response & index 1 is the img in numpy array 
-       # print response
         if response[0]:
             for face in response[0]["faces"]:
                 timeStamp = str(datetime.now())
@@ -93,12 +90,10 @@ def sendFaces (sendFaceQueue, responseFaceQueue):
         while sendFaceQueue.empty():
             pass  
         img = sendFaceQueue.get()    
-        #print type (img)
         cv2.imshow("Sent Face",img)
         cv2.waitKey(5)
         frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
         response = getFace(frameBytes)
-       # print response
         responseFaceQueue.put([response , frameBytes])
 
 
@@ -110,9 +105,9 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
         faceIds = []
         if response[0]:
             for face in response[0]:
-                print face
+                #print face
                 fid = str (face["faceId"])
-                print fid
+                #print fid
                 faceIds.append(fid)
                 verified = verifyFace(faceIds , userName)
                # print type ( verified )
@@ -127,18 +122,18 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                                 print database[found]
 
                         else :
-                            filename = str(datetime.now())
-                            filename = re.sub(r' ', '_', filename)
-                            print filename
+                            timestamp = str(datetime.now())
+                            filename = re.sub(r' ', '_', timestamp)
+                            #print filename
 
                             block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
                             url = "https://sokvideoanalyze8b05.blob.core.windows.net/unauthorized/%s" % filename
-                            query = """insert into UnauthImageGallery(username, image_filename, image_path) values('%s', '%s', '%s')"""%( userName, filename, url)
+                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp) values('%s', '%s', '%s' , '%s')"""%( userName, filename, url, timestamp)
                             #query = """select * from Persons"""
-                            print query
+                           # print query
                             cursor.execute( query )
                             db.commit()
-                            print cursor.fetchall()
+                            #print cursor.fetchall()
                             print "face not authorized"
 
         else :
@@ -165,9 +160,10 @@ if __name__ == '__main__':
         analyseFacesProcess.start()
         
         ''' start ipStream'''
+        '''
     
         host = config['IPcam']['hostIP']
-        print host
+        #print host
 	
       #  if len(sys.argv)>1:
        #     host = sys.argv[1]
@@ -188,7 +184,7 @@ if __name__ == '__main__':
                 bytes= bytes[b+2:]
                 i = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
                 cv2.imshow(hoststr,i)
-                if  count % 20 == 0 :
+                if  count % 10 == 0 :
                     sendQueue.put(i) 
                     print 'sent'
                 
@@ -196,7 +192,7 @@ if __name__ == '__main__':
                     exit(0)
                 count += 1
                 #print count
-        
+        '''
 
         '''end ip stream'''
         
@@ -205,7 +201,7 @@ if __name__ == '__main__':
 
 
 
-        '''
+        
         count = 0
         while True:
            # print count
@@ -213,9 +209,7 @@ if __name__ == '__main__':
             if  count % 60 == 0 :
                 sendQueue.put(img)  
             count += 1
-        '''
-
-
+        
 
 
 

@@ -13,22 +13,29 @@ from sqlalchemy.orm import sessionmaker
 #from addPerson import addPerson
 from faceapi import addFace, addPerson, createGroup, trainFaces
 #from trainFaces import trainFaces
-from .camera import *
+#from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
 import json
+<<<<<<< HEAD
 import httplib, urllib, base64
 
+=======
+import httplib, urllib, base64, yaml
+>>>>>>> f0c48855416f6cf295c8ad5795b3df8a5b9227e5
 """
 with open("../config.yaml", "r") as f:
     config = yaml.load(f)
 """
+<<<<<<< HEAD
 
+=======
+>>>>>>> f0c48855416f6cf295c8ad5795b3df8a5b9227e5
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
 
 
-@app.route('/', methods = ['GET', 'POST']) 
+@app.route('/', methods = ['GET', 'POST'])
 def homepage():
-  return render_template('index.html', title = 'Home') 
+  return render_template('index.html', title = 'Home')
 
 @app.route('/index')
 def index():
@@ -40,10 +47,10 @@ def signup():
     if form.validate_on_submit():
         user = Users(email=form.email.data, username=form.username.data, password=form.password.data)
         code = createGroup (form.username.data, form.email.data, form.username.data)
-        
+
         db.session.add(user)
         db.session.commit()
-    
+
         print code
 
         login_user(user)
@@ -62,7 +69,7 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             login_user(user)
 
-            return redirect(url_for('dashboard')) 
+            return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'danger')
     return render_template('login.html', title='Sign In', form = form)
@@ -72,20 +79,20 @@ def login():
 def editProfile():
     profile = Profile.query.filter_by(username = current_user.username).first()
     if profile is None:
-        form = EditProfileForm() 
+        form = EditProfileForm()
         if form.validate_on_submit():
             profile = Profile(username = current_user.username, first_name = form.first_name.data, last_name = form.last_name.data)
-            print profile 
+            print profile
             db.session.add(profile)
             db.session.commit()
             return redirect(url_for('cameraDetails'))
-    else: 
+    else:
         form = EditProfileForm(obj=profile)
         form.populate_obj(profile)
         if form.validate_on_submit():
             print "hey"
             profile = Profile(username = current_user.username, first_name = form.first_name, last_name = form.last_name)
-            print profile 
+            print profile
             db.session.commit()
             return redirect(url_for('cameraDetails'))
     return render_template('editProfile.html', title='Edit Profile', form = form)
@@ -109,10 +116,10 @@ def logout():
 def cameraDetails():
     camera = Camera.query.filter_by(username = current_user.username).all()
     if request.method == 'POST':
-        if request.form['submit'] == 'Submit':    
+        if request.form['submit'] == 'Submit':
             detailsList = request.form.getlist('myInputs[]')
             CameraNoList = detailsList[0::2]
-            CameraDescList = detailsList[1::2] 
+            CameraDescList = detailsList[1::2]
             length = len(CameraNoList)
             for i in range(0,length):
                 camera = Camera(username = current_user.username , cno = CameraNoList[i] , cdesc = CameraDescList[i])
@@ -125,15 +132,15 @@ def cameraDetails():
 @app.route('/unAuth' , methods = ['GET' , 'POST'])
 @login_required
 def unAuth():
-    
+
     pics = UnauthImageGallery.query.filter_by(username = current_user.username).all()
     return render_template('Unauth.html', pics = pics)
 
 @app.route('/train' , methods = ['GET' , 'POST'])
 @login_required
 def train():
-    return 'Hello World' 
-    
+    return 'Hello World'
+
 
 @app.route('/uploadImages', methods=['GET', 'POST'])
 @login_required
@@ -144,10 +151,11 @@ def uploadImages():
     x = Persons.query.filter_by(username = current_user.username).all()
     print x
     form = EditImageGalleryForm()
-    
-    if form.submit.data: #adding another person    
+
+    if form.submit.data: #adding another person
         code = addPerson ( current_user.username, form.name.data, form.name.data)
         add_person = Persons(person_name = form.name.data, username = current_user.username, azure_id = code["personId"])
+        print code
         print form.name.data
         db.session.add(add_person)
         db.session.commit()
@@ -163,7 +171,7 @@ def deleteImages():
     delPics = []
     if request.method == "POST":
         delPics = request.form.getlist('users')
-    print delPics 
+    print delPics
     if delPics:
         for f in delPics:
             print f
@@ -185,7 +193,7 @@ def TrainFaces():
     for face in faces:
         addFace(str(face[0]) , str(face[2]), str(face[1]))
 
-    
+
 
     code = trainFaces (current_user.username)
     print code
@@ -193,7 +201,7 @@ def TrainFaces():
         resp = "Successfully Trained!"
 
         notTrained = AuthImageGallery.query.filter_by(training_status = 'false')
-        
+
         for face in notTrained:
             face.training_status = 'true'
             db.session.commit()
@@ -207,14 +215,14 @@ def TrainFaces():
 @app.route('/viewPerson/<user>' , methods = ['GET' , 'POST'])
 @login_required
 def viewPerson(user):
-    print user 
+    print user
     listPics = AuthImageGallery.query.filter_by(person_id = user)
     print listPics
 
     delPics = []
     if request.method == "POST":
         delPics = request.form.getlist('users')
-    print delPics 
+    print delPics
     if delPics:
         for f in delPics:
             print f
@@ -232,18 +240,18 @@ def viewPerson(user):
 @login_required
 def addPics(user):
 
-    current_person = Persons.query.filter_by(person_id = user).first() 
+    current_person = Persons.query.filter_by(person_id = user).first()
 
     form = EditImageGalleryForm()
     """
-    if form.picture.data: 
+    if form.picture.data:
         print "picture"
         naam = current_person.person_name
-        takePicture(naam)   
+        takePicture(naam)
     """
 
-    if form.skip.data: 
-        
+    if form.skip.data:
+
         if 'image' in request.files:
 
             for f in request.files.getlist('image'):

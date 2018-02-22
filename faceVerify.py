@@ -13,7 +13,7 @@ def verifyFace(faceIds, GROUP_ID):
     'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
     }
 
-    print "hi"
+    #print "hi"
     ids = str (faceIds)
    # print ids
     body = "{ 'personGroupId':'%s', 'faceIds': %s, 'maxNumOfCandidatesReturned':1, 'confidenceThreshold': 0.5 } " %(GROUP_ID, ids)
@@ -24,7 +24,7 @@ def verifyFace(faceIds, GROUP_ID):
     conn.request("POST", "/face/v1.0/identify" , body, headers)
     response = conn.getresponse()
     data = response.read()
-    print data + "hey"
+   # print data + "hey"
     data = json.loads (data)
     conn.close()
     return data
@@ -35,7 +35,7 @@ def getPerson(img):
     'Content-Type': 'application/octet-stream',
     'Ocp-Apim-Subscription-Key': config['azure']['cvAPIkey'],
     }
-    print config['azure']['faceAPIkey']
+   # print config['azure']['faceAPIkey']
     params = urllib.urlencode({ 'visualFeatures' : 'Faces, Categories, Tags'})
 
     #personGroupId = GROUP_ID
@@ -52,8 +52,8 @@ def getPerson(img):
     conn.close()
     data = json.loads(data)
     #print data
-    if data["faces"]:
-        print data["faces"]
+   # if data["faces"]:
+        #print data["faces"]
     return data
 
 
