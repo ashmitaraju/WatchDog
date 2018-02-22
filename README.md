@@ -2,7 +2,7 @@
 
 **WatchDog** is a smart surveillance system that leverages the power of computer vision and cloud computing technology to automatically scan video streams or frames from Closed-circuit television (CCTV) or Web cameras to detected intruders and unauthorized individuals and alert immediately to take appropriate action.
 
-[Try it out yourself!](http://watchdogsok.pythonanywhere.com/)
+[Try it out yourself!](https://watchdogsok.azurewebsites.net/)
 
 
 ## FaceAPI
@@ -21,6 +21,6 @@ This project was created by a team of students from R V College of Engineering, 
 1. Clone the repository 
 2. Install the requirements specified in requirements.txt
 3. Place the [config](https://1drv.ms/u/s!AuPyeSIGdEA3gygMFeZu3PDK2XCg) file in the root directory
-4. Sign up on the [website](http://watchdogsok.pythonanywhere.com/) and train the API with authorized faces. (If the website throws an Internal Server Error, please reload the page). 
+4. Sign up on the [website](https://watchdogsok.azurewebsites.net/) and train the API with authorized faces. (If the website throws an Internal Server Error, please reload the page). 
 5. Run ```videoAnalyser.py <username>```. Username is sys.argv[1] and should be the same as the one entered during SignUp.
 6. This script will open the webcam which will emulate the CCTV cameras. 
