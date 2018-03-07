@@ -14,22 +14,13 @@ from sqlalchemy.orm import sessionmaker
 from faceapi import addFace, addPerson, createGroup, trainFaces
 #from trainFaces import trainFaces
 #from .camera import *
-from azure.storage.blob import BlockBlobService , ContentSettings
+#from azure.storage.blob import BlockBlobService , ContentSettings
 import json
-<<<<<<< HEAD
-import httplib, urllib, base64
-
-=======
 import httplib, urllib, base64, yaml
->>>>>>> f0c48855416f6cf295c8ad5795b3df8a5b9227e5
 """
 with open("../config.yaml", "r") as f:
     config = yaml.load(f)
 """
-<<<<<<< HEAD
-
-=======
->>>>>>> f0c48855416f6cf295c8ad5795b3df8a5b9227e5
 block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
 
 
