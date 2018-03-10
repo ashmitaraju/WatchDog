@@ -1,10 +1,11 @@
 
-import httplib, urllib, base64, json
-headers = {
-    # Request headers
-    'Content-Type': 'application/json',
-    'Ocp-Apim-Subscription-Key': '863007e7f6dd4cfab18e3de9c8fb1fbd',
-}
+import httplib, urllib, base64, json, yaml
+
+
+
+with open("../config.yaml", "r") as f:
+    config = yaml.load(f)
+
 
 #params = urllib.urlencode({ 'personGroupId' : GROUP_ID
 #})
@@ -13,7 +14,7 @@ def addFace ( GROUP_ID, PERSON_ID, PATH_TO_IMAGE):
     headers = {
     # Request headers
     'Content-Type': 'application/json',
-    'Ocp-Apim-Subscription-Key': '863007e7f6dd4cfab18e3de9c8fb1fbd',
+    'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
     }
     personGroupId = GROUP_ID
     personId = PERSON_ID
@@ -35,7 +36,7 @@ def addPerson ( GROUP_ID, PERSON_NAME, PERSON_DATA ):
     headers = {
     # Request headers
     #'Content-Type': 'application/json',
-    'Ocp-Apim-Subscription-Key': '863007e7f6dd4cfab18e3de9c8fb1fbd',
+    'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
     }
     params = urllib.urlencode({ 'personGroupId' : GROUP_ID
     })
@@ -59,7 +60,7 @@ def createGroup ( GROUP_ID, PERSON_NAME, PERSON_DATA):
     headers = {
     # Request headers
    # 'Content-Type': 'application/json',
-    'Ocp-Apim-Subscription-Key': '863007e7f6dd4cfab18e3de9c8fb1fbd',
+    'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
     }
     personGroupId = GROUP_ID
 
@@ -78,6 +79,10 @@ def createGroup ( GROUP_ID, PERSON_NAME, PERSON_DATA):
 
 def trainFaces ( GROUP_ID ):
     personGroupId = GROUP_ID
+
+    headers = {
+    'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
+    }
 
     body = ""
 

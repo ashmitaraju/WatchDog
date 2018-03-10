@@ -127,7 +127,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                             #print filename
 
                             block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
-                            url = "https://sokvideoanalyze8b05.blob.core.windows.net/unauthorized/%s" % filename
+                            url = "https://watchdogsok.blob.core.windows.net/unauthorized/%s" % filename
                             query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp) values('%s', '%s', '%s' , '%s')"""%( userName, filename, url, timestamp)
                             #query = """select * from Persons"""
                            # print query
