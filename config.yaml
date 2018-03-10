@@ -1,0 +1,26 @@
+azure:
+  faceAPIkey : bf3f79aada72433988b477ae3f8ae4c0
+  cvAPIkey : 2d4eb461ef394226b3ca60739d2d8f0d
+
+mysql:
+  username : aravindbs@watchdogsok
+  password : Watchdog123
+  server : watchdogsok.mysql.database.azure.com
+  database : watchdog
+
+azure-blob :
+  blob_url : https://watchdogsok.blob.core.windows.net/video
+  account_name : watchdogsok
+  account_key : O2HPAwt/M4xs2dQ+zyLTjflg/u29v8cI3Hk0/ClLUskbwTy2SMk2kE9HQL5yYMudBnu5RBKV5ZIAcfqQMfjBfw==
+
+IPcam :
+  hostIP : '192.168.0.101:8080'
+
+  
+
+
+
+ 
+
+
+

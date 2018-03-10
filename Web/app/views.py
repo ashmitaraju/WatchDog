@@ -17,11 +17,11 @@ from faceapi import addFace, addPerson, createGroup, trainFaces
 from azure.storage.blob import BlockBlobService , ContentSettings
 import json
 import httplib, urllib, base64, yaml
-"""
+
 with open("../config.yaml", "r") as f:
     config = yaml.load(f)
-"""
-block_blob_service = BlockBlobService(account_name='sokvideoanalyze8b05', account_key='4SdxwWwId8+nPEhD6yY4f6om1BGnlbFAp7EnUcyrKcxKNOVTtDwJ6syOQz7ZMrvewWTyQWBBYd5Jc7WcBE1D9g==')
+
+block_blob_service = BlockBlobService(account_name = config['azure-blob']['account_name'], account_key= config['azure-blob']['account_key'])
 
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -253,7 +253,7 @@ def addPics(user):
                     #path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
                     block_blob_service.create_blob_from_stream('video', filename, f)
                     #f.save(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
-                    url = "https://sokvideoanalyze8b05.blob.core.windows.net/video/" + filename
+                    url = config['azure-blob']['blob_url'] + "/" + filename
 
                     person = Persons.query.filter_by(person_id = user).first()
                     image = AuthImageGallery(image_filename= filename, image_path= url, person_id = person.person_id, training_status = 'false' )
