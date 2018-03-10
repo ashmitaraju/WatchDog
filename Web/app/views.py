@@ -14,7 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from faceapi import addFace, addPerson, createGroup, trainFaces
 #from trainFaces import trainFaces
 #from .camera import *
-from azure.storage.blob import BlockBlobService , ContentSettings
+#from azure.storage.blob import BlockBlobService , ContentSettings
 import json
 import httplib, urllib, base64, yaml
 
