@@ -12,9 +12,20 @@
 <br>
 {% if camera %}
 
+{% for cam in camera %} 
 
-{% endif %}
+<form action="{{ url_for('cameraDetails') }}" method="POST">
+    <div id="dynamicInput">
+            <div class="col-sm-4">
+                    <div class="form-group">
+         Camera 1<br><input class="form-control" type="text" name="myInputs[]" placeholder="Enter camera number " required value="{{cam.cno}}"><br><input class="form-control" type="text" name="myInputs[]" placeholder="Enter camera location " required value="{{cam.cdesc}}"><br></div></div>
+    </div>
+{% endfor %}
+    <input type="button" class="btn btn-info btn-round text-center" value="Add another camera" onClick="addInput('dynamicInput');" >
+    <div> <input type="submit" class="btn btn-info btn-round text-center" value="Submit" name="submit"></div>
+</form>
 
+{% else %}
 <form action="{{ url_for('cameraDetails') }}" method="POST">
         <div id="dynamicInput">
                 <div class="col-sm-4">
@@ -25,6 +36,8 @@
         <div> <input type="submit" class="btn btn-info btn-round text-center" value="Submit" name="submit"></div>
 </form>
 
+
+{% endif %}
 
 
 <script>

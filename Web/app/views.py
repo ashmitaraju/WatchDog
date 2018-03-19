@@ -100,7 +100,7 @@ def dashboard():
 @login_required
 def logout():
     logout_user()
-    flash('You have logged out.')
+    flash('You have logged out.' , 'success')
     return redirect(url_for('login' ))
 
 @app.route('/cameraDetails' , methods = ['GET' , 'POST'])
@@ -114,9 +114,14 @@ def cameraDetails():
             CameraDescList = detailsList[1::2]
             length = len(CameraNoList)
             for i in range(0,length):
-                camera = Camera(username = current_user.username , cno = CameraNoList[i] , cdesc = CameraDescList[i])
-                db.session.add(camera)
-                db.session.commit()
+                existing_camera = Camera.query.filter_by(cno=CameraNoList[i]).first()
+                if existing_camera is None:
+                    camera = Camera(username = current_user.username , cno = CameraNoList[i] , cdesc = CameraDescList[i])
+                    db.session.add(camera)
+                    db.session.commit()
+                else: 
+                    existing_camera.cdesc = CameraDescList[i]
+                    db.session.commit()
             return redirect(url_for('dashboard'))
     return render_template('cameraDetails.html' , camera = camera)
 
@@ -140,7 +145,12 @@ def uploadImages():
     count = 0
    
     #x = db.session.query(Persons.person_name,Persons.person_id,AuthImageGallery.image_path).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username).all()
-    pics = Persons.query.filter_by(username = current_user.username).all()
+    people = Persons.query.filter_by(username = current_user.username).all()
+    peopleDict = {}
+    for ppl in people: 
+        photo = AuthImageGallery.query.filter_by(person_id = ppl.person_id).first()
+        peopleDict[ppl] = photo
+    print peopleDict
     
     form = EditImageGalleryForm()
 
@@ -153,7 +163,7 @@ def uploadImages():
         db.session.commit()
         return redirect(url_for('addPics' , user = add_person.person_id))
 
-    return render_template('Auth.html' , form = form, pics = pics)
+    return render_template('Auth.html' , form = form, peopleDict = peopleDict)
 """
 @app.route('/deleteImages', methods=['GET', 'POST'])
 @login_required
@@ -219,7 +229,9 @@ def viewPerson(user):
         for f in delPics:
             print f
             img = AuthImageGallery.query.filter_by(imgid = f).first()
+            print img
             block_blob_service.delete_blob('video', img.image_filename)
+            flash('Deleted Successfully', 'success')
             #os.remove(os.path.join(app.config['UPLOADED_IMAGES_DEST'], img.image_filename))
             db.session.delete(img)
             db.session.commit()

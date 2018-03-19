@@ -29,6 +29,7 @@
                         <a href="javascript:void(take_snapshot())">Take Snapshot</a>
                         <br>
                         <a href="javascript:void(saveSnap())">Save this Snapshot</a>
+                        <div id="snackbar">Saved!</div>
                         <br>
                         <a href="{{ url_for('TrainFaces') }}" class="btn btn-info btn-round text-center">Train Saved Snapshots</a>
 
@@ -48,60 +49,58 @@
                             var base64image = document.getElementById("image").src;
 
                             Webcam.upload( base64image, "{{url_for('getWebcamPics' , user=user)}}", function(code, text) {
-                            console.log('Save successfully');
+                                var x = document.getElementById("snackbar")
+                                x.className = "show";
+                                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
                             //console.log(text);
                             });
                         }
-                            /*
-                            var base64image = document.getElementById("image").src;
-                            
-                            function getBlob(base64image){
-
-                                var binary = atob(base64image.split(',')[1]);
-                                var array = [];
-                                for(var i = 0; i < binary.length; i++) {
-                                    array.push(binary.charCodeAt(i));
-                                }
-                                return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-                            };
-                        
-                        var record = getBlob(base64image); 
-                        console.log(record);
-                        
-                            $("#myAwesomeForm").submit(function(e){
-                                e.preventDefault();
-                                save();
-                            });
-
-                            function save() {
-                                console.log('hey');
-                            var form = document.getElementById("myAwesomeForm");
-                            var form1 = new FormData(form);
-                            form1.append("file", record);
-                            //form.append('title', searchedObj.title);
-                            //Chrome inspector shows that the post data includes a file and a title.   
-                            console.log(form1);
-
-                            $.ajax({
-                            type: 'POST',
-                            url: "{{url_for('getWebcamPics' , user=user)}}",
-                            data: form1,
-                            cache: false,
-                            processData: false,
-                            contentType: false,
-                            success: function(data){
-                                console.log(data);
-                            },
-                            });
-
-                        };
-
-                            */ 
-
                             
                         
                         </script>
-                       
+                       <style>
+                        #snackbar {
+                            visibility: hidden;
+                            min-width: 250px;
+                            margin-left: -125px;
+                            background-color: #333;
+                            color: #fff;
+                            text-align: center;
+                            border-radius: 2px;
+                            padding: 16px;
+                            position: fixed;
+                            z-index: 1;
+                            left: 50%;
+                            bottom: 30px;
+                            font-size: 17px;
+                        }
+                        
+                        #snackbar.show {
+                            visibility: visible;
+                            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                        }
+                        
+                        @-webkit-keyframes fadein {
+                            from {bottom: 0; opacity: 0;} 
+                            to {bottom: 30px; opacity: 1;}
+                        }
+                        
+                        @keyframes fadein {
+                            from {bottom: 0; opacity: 0;}
+                            to {bottom: 30px; opacity: 1;}
+                        }
+                        
+                        @-webkit-keyframes fadeout {
+                            from {bottom: 30px; opacity: 1;} 
+                            to {bottom: 0; opacity: 0;}
+                        }
+                        
+                        @keyframes fadeout {
+                            from {bottom: 30px; opacity: 1;}
+                            to {bottom: 0; opacity: 0;}
+                        }
+                        </style>
                     </div>
                 </div>
               </div>

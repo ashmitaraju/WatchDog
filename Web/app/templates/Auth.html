@@ -20,9 +20,10 @@
                     </div>
                     <div class="col-md-12">
                             <div class="col-md-12">
-                                    {% for pic in pics: %}
+                                    {% for ppl in peopleDict: %}
                                     <div class="image floated_img" >
-                                      <a href="{{ url_for('viewPerson' , user =pic.person_id) }}" >{{pic.person_name}} </a>
+                                      <a href="{{ url_for('viewPerson' , user =ppl.person_id) }}" >{{ppl.person_name}} </a>
+                                      <img src= {{ peopleDict[ppl].image_path }} id="myImage" class="img-rounded img-raised object-fit_cover"  width="120" > 
                                       <br>
                                       </div>
                                     {% endfor %}
