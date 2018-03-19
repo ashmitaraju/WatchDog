@@ -52,6 +52,7 @@ def sendFrames(sendQueue, responseQueue):
             pass  
         img = sendQueue.get()    
         cv2.imshow("Sent Frame",img)
+        print "sent frame"
         cv2.waitKey(5)
         frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
         response = getPerson (frameBytes)
@@ -110,7 +111,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                 #print fid
                 faceIds.append(fid)
                 verified = verifyFace(faceIds , userName)
-               # print type ( verified )
+                #print type ( verified )
                 
                 if verified:
                     for verifiedFace in verified:

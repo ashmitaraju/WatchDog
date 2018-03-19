@@ -4,19 +4,20 @@ from flask_login import login_required, login_user, logout_user, current_user
 from .forms import *
 from app import db, images
 from .models import *
-import datetime
+from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-#from createGroup import createGroup
-#from addPerson import addPerson
+from createGroup import createGroup
+from addPerson import addPerson
 from faceapi import addFace, addPerson, createGroup, trainFaces
-#from trainFaces import trainFaces
+from trainFaces import trainFaces
 #from .camera import *
 from azure.storage.blob import BlockBlobService , ContentSettings
 import json
 import httplib, urllib, base64, yaml
+import re
 
 with open("../config.yaml", "r") as f:
     config = yaml.load(f)
@@ -137,10 +138,10 @@ def train():
 @login_required
 def uploadImages():
     count = 0
-    pics = []
+   
     #x = db.session.query(Persons.person_name,Persons.person_id,AuthImageGallery.image_path).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username).all()
-    x = Persons.query.filter_by(username = current_user.username).all()
-    print x
+    pics = Persons.query.filter_by(username = current_user.username).all()
+    
     form = EditImageGalleryForm()
 
     if form.submit.data: #adding another person
@@ -152,7 +153,7 @@ def uploadImages():
         db.session.commit()
         return redirect(url_for('addPics' , user = add_person.person_id))
 
-    return render_template('Auth.html' , form = form, x = x)
+    return render_template('Auth.html' , form = form, pics = pics)
 """
 @app.route('/deleteImages', methods=['GET', 'POST'])
 @login_required
@@ -189,7 +190,7 @@ def TrainFaces():
     code = trainFaces (current_user.username)
     print code
     if code == 202:
-        resp = "Successfully Trained!"
+        flash("Successfully Trained!",'success')
 
         notTrained = AuthImageGallery.query.filter_by(training_status = 'false')
 
@@ -197,9 +198,9 @@ def TrainFaces():
             face.training_status = 'true'
             db.session.commit()
     else :
-        resp = "Training Failed."
+        flash("Training Failed.",'danger')
 
-    flash ( resp )
+    
     return redirect(url_for('dashboard'))
 
 
@@ -207,7 +208,7 @@ def TrainFaces():
 @login_required
 def viewPerson(user):
     print user
-    listPics = AuthImageGallery.query.filter_by(person_id = user)
+    listPics = AuthImageGallery.query.filter_by(person_id = user).all()
     print listPics
 
     delPics = []
@@ -244,7 +245,7 @@ def addPics(user):
     if form.skip.data:
 
         if 'image' in request.files:
-
+            print request.files
             for f in request.files.getlist('image'):
                 print f
                 if f.filename:
@@ -260,20 +261,68 @@ def addPics(user):
                     db.session.add(image)
                     db.session.commit()
                     print "done"
+            faces =  db.session.query(Persons.username,AuthImageGallery.image_path, Persons.azure_id ).filter(Persons.person_id == AuthImageGallery.person_id, Persons.username == current_user.username, AuthImageGallery.training_status == 'false').all()
+
+            for face in faces:
+                addFace(str(face[0]) , str(face[2]), str(face[1]))
+
+
+
+            code = trainFaces (current_user.username)
+            print code
+            if code == 202:
+                resp = "Successfully Trained!"
+                flash ( resp , 'success')
+                notTrained = AuthImageGallery.query.filter_by(training_status = 'false')
+
+                for face in notTrained:
+                    face.training_status = 'true'
+                    db.session.commit()
+            else :
+                resp = "Training Failed."
+                flash ( resp , 'danger')
+            
         return redirect(url_for('dashboard'))
 
-    return render_template('pics.html', form = form)
+    return render_template('pics.html', form = form, user=user)
 
-@app.route('/webcam', methods=['GET', 'POST'])
+@app.route('/webcam/<user>', methods=['GET', 'POST'])
 @login_required
-def webcam():
-    return render_template('webcam.html')
+def webcam(user):
+    return render_template('webcam.html', user = user)
 
-@app.route('/getWebcamPics', methods=['GET', 'POST'])
+@app.route('/getWebcamPics/<user>', methods=['POST'])
 @login_required
-def getWebcamPics():
+def getWebcamPics(user):
+    print user
+    
+    if request.method == "POST":
+        print "hey" 
+        ret = request.files
+        #img = ret.to_dict(flat=False)
+        #print img
+        
+        for f in request.files.getlist('webcam'):
+                print f
+                if f.filename:
+                    print "hi"
+                    filename = secure_filename(f.filename)
+                    time = str(datetime.now())
+                    time = re.sub(r"\s+", '-', time)
+                    filename = filename + time
+                    #path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+                    block_blob_service.create_blob_from_stream('video', filename, f)
+                    #f.save(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
+                    url = config['azure-blob']['blob_url'] + "/" + filename
 
-    app.logger.debug(request.files['file'].filename)
+                    person = Persons.query.filter_by(person_id = user).first()
+                    print person 
+                    image = AuthImageGallery(image_filename= filename, image_path= url, person_id = person.person_id, training_status = 'false' )
+                    db.session.add(image)
+                    db.session.commit()
+                    print "done"
+        
+        
+ 
 
-    return render_template('pics.html')
 
