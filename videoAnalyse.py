@@ -43,6 +43,7 @@ for result in results:
     database[result[0]] = result[1]
 
 
+camID = ""
     
 #database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'} 
 def sendFrames(sendQueue, responseQueue):
@@ -144,6 +145,17 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
        
         
 if __name__ == '__main__':
+
+    query = """select * from camera where username = "%s" """ %userName
+    cursor.execute(query)
+    cameras = cursor.fetchall()
+
+    print "ID\tCamera Location"
+    for camera in cameras :
+        print "%s\t%s" %( camera[0], camera[2] );
+
+    camID = input("\nEnter Camera ID :")
+
     sendQueue = Queue()
     responseQueue = Queue()
     sendFaceQueue = Queue()

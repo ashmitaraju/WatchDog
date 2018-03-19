@@ -14,7 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from faceapi import addFace, addPerson, createGroup, trainFaces
 #from trainFaces import trainFaces
 #from .camera import *
-#from azure.storage.blob import BlockBlobService , ContentSettings
+from azure.storage.blob import BlockBlobService , ContentSettings
 import json
 import httplib, urllib, base64, yaml
 
@@ -263,3 +263,12 @@ def addPics(user):
         return redirect(url_for('dashboard'))
 
     return render_template('pics.html', form = form)
+
+'''
+@app.route('/mystreams' , methods = ['GET' , 'POST'])
+@login_required
+def viewStreams():
+'''
+
+
+
