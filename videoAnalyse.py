@@ -43,6 +43,7 @@ for result in results:
     database[result[0]] = result[1]
 
 
+camID = ""
     
 #database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'} 
 def sendFrames(sendQueue, responseQueue):
@@ -129,7 +130,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
 
                             block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
                             url = "https://watchdogsok.blob.core.windows.net/unauthorized/%s" % filename
-                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp) values('%s', '%s', '%s' , '%s')"""%( userName, filename, url, timestamp)
+                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp,cameraID, cameraLocation ) values('%s', '%s', '%s' , '%s', '%s', '%s')"""%( userName, filename, url, timestamp, camID, cameraLocation)
                             #query = """select * from Persons"""
                            # print query
                             cursor.execute( query )
@@ -145,6 +146,25 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
        
         
 if __name__ == '__main__':
+
+    query = """select * from camera where username = "%s" """ %userName
+    cursor.execute(query)
+    cameras = cursor.fetchall()
+
+    print "ID\tCamera Location"
+
+    camDict = {}
+    for camera in cameras :
+        print "%s\t%s" %(camera[0],camera[2])
+        camDict[ camera[0]] = camera[2]
+
+    print camDict
+    camID = raw_input("Enter ID : ")
+
+    cameraLocation = camDict[camID]
+
+        
+
     sendQueue = Queue()
     responseQueue = Queue()
     sendFaceQueue = Queue()
