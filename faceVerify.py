@@ -15,7 +15,7 @@ def verifyFace(faceIds, GROUP_ID):
 
     #print "hi"
     ids = str (faceIds)
-   # print ids
+    #print ids
     body = "{ 'personGroupId':'%s', 'faceIds': %s, 'maxNumOfCandidatesReturned':1, 'confidenceThreshold': 0.5 } " %(GROUP_ID, ids)
 
     #print body
@@ -24,7 +24,7 @@ def verifyFace(faceIds, GROUP_ID):
     conn.request("POST", "/face/v1.0/identify" , body, headers)
     response = conn.getresponse()
     data = response.read()
-   # print data + "hey"
+    #print data + "hey"
     data = json.loads (data)
     conn.close()
     return data

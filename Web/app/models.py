@@ -89,7 +89,8 @@ class UnauthImageGallery(UserMixin, db.Model):
     image_filename = db.Column(db.String(60), default= None, nullable= False)
     image_path = db.Column(db.Text, default= None, nullable = False)
     timestamp = db.Column(db.Text, nullable = False)
-   # cameraID = db.Column(db.Text, nullable = False)
+    cameraID = db.Column(db.Text, nullable = False)
+    cameraLocation = db.Column(db.Text, nullable = False)
 
     def __repr(self):
         return '<UnauthImageGallery :{}>'.format(self.username)

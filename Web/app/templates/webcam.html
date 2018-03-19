@@ -1,0 +1,111 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+{% block title %}Authenticated{% endblock %}
+{% block body %}
+
+<link rel=stylesheet type="text/css" href="../static/assets/css/image.css">
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<div class="intro-header">
+        <div class="container">
+            <br><br><br><br><br>
+            {{ utils.flashed_messages() }}
+            <div class="row">
+              <div class="col-md-10 col-md-offset-2 col-sm-6 col-sm-offset-3">
+                <div class="card card-signup">
+                  
+                    <div class="header header-info text-center">
+                      <h4>Add Pictures</h4>
+                    </div>
+                    <div class="col-md-12">
+                            <div class="col-md-12">
+                                    
+                    <div class="content text-left">
+                            
+
+                        <script src="../static/assets/js/webcam.js"></script>
+                        <div id="my_camera" style="width:320px; height:240px;"></div>
+                        <div id="my_result"></div>
+                        <a href="javascript:void(take_snapshot())">Take Snapshot</a>
+                        <br>
+                        <a href="javascript:void(saveSnap())">Save this Snapshot</a>
+                        <br>
+                        <a href="{{ url_for('TrainFaces') }}" class="btn btn-info btn-round text-center">Train Saved Snapshots</a>
+
+                           
+
+                        <script language="JavaScript">
+                            Webcam.attach( '#my_camera' );
+                            
+                            function take_snapshot() {
+                                Webcam.snap( function(data_uri) {
+                                    document.getElementById('my_result').innerHTML = '<img id="image" src="'+data_uri+'"/>';
+                                } )
+                            }
+
+                            function saveSnap(){
+                            // Get base64 value from <img id='imageprev'> source
+                            var base64image = document.getElementById("image").src;
+
+                            Webcam.upload( base64image, "{{url_for('getWebcamPics' , user=user)}}", function(code, text) {
+                            console.log('Save successfully');
+                            //console.log(text);
+                            });
+                        }
+                            /*
+                            var base64image = document.getElementById("image").src;
+                            
+                            function getBlob(base64image){
+
+                                var binary = atob(base64image.split(',')[1]);
+                                var array = [];
+                                for(var i = 0; i < binary.length; i++) {
+                                    array.push(binary.charCodeAt(i));
+                                }
+                                return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+                            };
+                        
+                        var record = getBlob(base64image); 
+                        console.log(record);
+                        
+                            $("#myAwesomeForm").submit(function(e){
+                                e.preventDefault();
+                                save();
+                            });
+
+                            function save() {
+                                console.log('hey');
+                            var form = document.getElementById("myAwesomeForm");
+                            var form1 = new FormData(form);
+                            form1.append("file", record);
+                            //form.append('title', searchedObj.title);
+                            //Chrome inspector shows that the post data includes a file and a title.   
+                            console.log(form1);
+
+                            $.ajax({
+                            type: 'POST',
+                            url: "{{url_for('getWebcamPics' , user=user)}}",
+                            data: form1,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(data){
+                                console.log(data);
+                            },
+                            });
+
+                        };
+
+                            */ 
+
+                            
+                        
+                        </script>
+                       
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endblock %}

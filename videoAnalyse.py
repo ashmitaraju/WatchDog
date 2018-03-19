@@ -53,6 +53,7 @@ def sendFrames(sendQueue, responseQueue):
             pass  
         img = sendQueue.get()    
         cv2.imshow("Sent Frame",img)
+        print "sent frame"
         cv2.waitKey(5)
         frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
         response = getPerson (frameBytes)
@@ -111,7 +112,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                 #print fid
                 faceIds.append(fid)
                 verified = verifyFace(faceIds , userName)
-               # print type ( verified )
+                #print type ( verified )
                 
                 if verified:
                     for verifiedFace in verified:
@@ -129,7 +130,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
 
                             block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
                             url = "https://watchdogsok.blob.core.windows.net/unauthorized/%s" % filename
-                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp) values('%s', '%s', '%s' , '%s')"""%( userName, filename, url, timestamp)
+                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp,cameraID, cameraLocation ) values('%s', '%s', '%s' , '%s', '%s', '%s')"""%( userName, filename, url, timestamp, camID, cameraLocation)
                             #query = """select * from Persons"""
                            # print query
                             cursor.execute( query )
@@ -151,10 +152,18 @@ if __name__ == '__main__':
     cameras = cursor.fetchall()
 
     print "ID\tCamera Location"
-    for camera in cameras :
-        print "%s\t%s" %( camera[0], camera[2] );
 
-    camID = input("\nEnter Camera ID :")
+    camDict = {}
+    for camera in cameras :
+        print "%s\t%s" %(camera[0],camera[2])
+        camDict[ camera[0]] = camera[2]
+
+    print camDict
+    camID = raw_input("Enter ID : ")
+
+    cameraLocation = camDict[camID]
+
+        
 
     sendQueue = Queue()
     responseQueue = Queue()
