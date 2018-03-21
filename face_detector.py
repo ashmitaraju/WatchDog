@@ -2,7 +2,7 @@ import cv2
 from datetime import datetime
 import dlib
 from multiprocessing import Process, Queue
-
+import signal
 
 def rect_to_bb(rect):
     # take a bounding predicted by dlib and convert it
@@ -67,28 +67,33 @@ def read_cam(frames):
 
 
 if __name__ == '__main__':
+    print "main"
+    frames = Queue(10)
+    faces = Queue()
+    frame_getter_process = Process(target=face_detector, args=(frames, faces))
+    face_detector_process = Process(target=read_cam, args=(frames,))
+
+    frame_getter_process.daemon = True
+    face_detector_process.daemon = True
+    original_signal_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+    frame_getter_process.start()
+    face_detector_process.start()
+    signal.signal(signal.SIGINT, original_signal_handler)
     try:
-        print "main"
-        frames = Queue(10)
-        faces = Queue()
-        frame_getter_process = Process(target=face_detector, args=(frames, faces))
-        face_detector_process = Process(target=read_cam, args=(frames,))
-
-        frame_getter_process.daemon = True
-        face_detector_process.daemon = True
-        frame_getter_process.start()
-        face_detector_process.start()
-
         frame_getter_process.join()
         face_detector_process.join()
-
         cv2.destroyAllWindows()
         exit(1)
     except Exception, e:
         print e
+        frame_getter_process.terminate()
+        face_detector_process.terminate()
+        frame_getter_process.join()
+        face_detector_process.join()
         if e is KeyboardInterrupt:
             cv2.destroyAllWindows()
             exit(1)
         else:
             raise e
+            exit(2)
 
