@@ -2,7 +2,8 @@ import cv2
 
 import urllib2
 import numpy as np
-
+import time 
+#from base_camera import BaseCamera
 
 '''
 host = "192.168.31.116:8080"
@@ -14,18 +15,19 @@ print 'Streaming ' + hoststr
 
 stream = urllib2.urlopen(hoststr)
 '''
+
 cam = cv2.VideoCapture(0)
+time.sleep(2)
 
 def getFrame():
     #print "hi"
     
     img = cam.read()[1]
-    img = cv2.flip(img, 1)
-    
+    img = cv2.flip(img, 1) 
     cv2.imshow("Window",img)
     cv2.waitKey(50)
     return img
-    
+
 
 
     

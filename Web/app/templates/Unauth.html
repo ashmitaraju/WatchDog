@@ -31,6 +31,7 @@
 
                                       <th class="text-left">Image</th>
                                       <th class="text-left">Timestamp</th>
+                                      <th class="text-left">Camera</th>
                                   </tr>
                               </thead>
 
@@ -42,6 +43,7 @@
                               <tr>
                                   <td>  <img src= {{ pic.image_path }} id="myImage" class="img-rounded img-raised object-fit_cover"  width="120" > </td>
                                   <td> {{ pic.timestamp }} </td>
+                                  <td> {{ pic.cameraLocation }}</td>
                               {% endfor %}
                               </tr>
                             </tbody>

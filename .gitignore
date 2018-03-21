@@ -9,3 +9,8 @@ faceDetectAWS.py
 Web/migrations
 .gitignore
 images
+motionDetection.py
+t.jpg
+base_camera.py
+web.py
+templates/
