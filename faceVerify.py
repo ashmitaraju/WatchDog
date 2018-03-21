@@ -24,7 +24,7 @@ def verifyFace(faceIds, GROUP_ID):
     conn.request("POST", "/face/v1.0/identify" , body, headers)
     response = conn.getresponse()
     data = response.read()
-    #print data + "hey"
+    #print data 
     data = json.loads (data)
     conn.close()
     return data
@@ -51,7 +51,7 @@ def getPerson(img):
     # print "person id = " + data
     conn.close()
     data = json.loads(data)
-    #print data
+    print data
    # if data["faces"]:
         #print data["faces"]
     return data

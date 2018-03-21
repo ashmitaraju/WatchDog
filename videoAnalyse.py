@@ -132,10 +132,11 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                             cursor.execute( query )
                             db.commit()
                             #print cursor.fetchall()
-                            print "face not authorized"
+                            print "Face not authorized"
 
         else :
-            print "No faces in frame"
+            pass
+           # print "No faces in frame"
      
 if __name__ == '__main__':
 
@@ -219,6 +220,10 @@ if __name__ == '__main__':
 
         # loop over the frames of the video
         count = 0
+        host = config["IPcam"]["hostIP"]
+        hoststr = 'http://' + host + '/videofeed'
+        
+        bytes = ""
         while True:
             # grab the current frame and initialize the occupied/unoccupied
             # text
@@ -260,13 +265,15 @@ if __name__ == '__main__':
             (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                 cv2.CHAIN_APPROX_SIMPLE)
             if cnts: 
-                print "occupied"
+               # print "occupied"
                 sendQueue.put(frame)  
             
        
         sendProcess.join()
     except KeyboardInterrupt:
         sendProcess.join()
+    
+
        # analyseProcess.join()
         os.kill(parent, signal.SIGTERM)
 

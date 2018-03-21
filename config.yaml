@@ -14,7 +14,7 @@ azure-blob :
   account_key : O2HPAwt/M4xs2dQ+zyLTjflg/u29v8cI3Hk0/ClLUskbwTy2SMk2kE9HQL5yYMudBnu5RBKV5ZIAcfqQMfjBfw==
 
 IPcam :
-  hostIP : '192.168.0.101:8080'
+  hostIP : '192.168.0.105:8080'
 
   
 

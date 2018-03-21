@@ -359,7 +359,6 @@ def removePeople():
         for id in delPeople:
             person = Persons.query.filter_by(person_id = id).first()
             response = deletePerson( current_user.username, person.azure_id)
-            if 
             flash('Deleted Successfully', 'success')
             db.session.delete(person)
             db.session.commit()
