@@ -94,7 +94,12 @@ def editProfile():
 @login_required
 def dashboard():
     profile = Profile.query.filter_by(username = current_user.username).first()
-    return render_template('dashboard.html' ,  profile = profile)
+    form = DateForm()
+
+    if form.validate_on_submit:
+        print form.date.data
+
+    return render_template('dashboard.html' ,  profile = profile, form=form)
 
 @app.route('/logout')
 @login_required
@@ -134,6 +139,8 @@ def cameraDetails():
 def unAuth():
 
     pics = UnauthImageGallery.query.filter_by(username = current_user.username).all()
+    for pic in pics: 
+        pic.timestamp = pic.timestamp[:16]
     return render_template('Unauth.html', pics = pics)
 
 @app.route('/train' , methods = ['GET' , 'POST'])
