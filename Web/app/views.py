@@ -113,6 +113,7 @@ def cameraDetails():
             CameraNoList = detailsList[0::2]
             CameraDescList = detailsList[1::2]
             length = len(CameraNoList)
+            
             for i in range(0,length):
                 existing_camera = Camera.query.filter_by(cno=CameraNoList[i]).first()
                 if existing_camera is None:
@@ -123,7 +124,7 @@ def cameraDetails():
                     existing_camera.cdesc = CameraDescList[i]
                     db.session.commit()
             return redirect(url_for('dashboard'))
-    return render_template('cameraDetails.html' , camera = camera)
+    return render_template('cameraDetails.html' , camera=camera, camcount=length )
 
 
 @app.route('/unAuth' , methods = ['GET' , 'POST'])

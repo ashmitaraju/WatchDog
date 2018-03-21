@@ -15,7 +15,7 @@ import MySQLdb
 import yaml
 import re
 import sys
-
+import imutils
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
@@ -79,11 +79,6 @@ def analyseResponses(sendQueue, responseQueue):
                 crop_img = response[1][y:y+h, x:x+w]
                 sendFaceQueue.put( crop_img )
                 cv2.imwrite( "images/%s.jpg" %timeStamp, crop_img )
-
-
-             
-        
-            
         else :
             print "No faces in frame"
 
@@ -140,11 +135,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
 
         else :
             print "No faces in frame"
-
-
-
-       
-        
+     
 if __name__ == '__main__':
 
     query = """select * from camera where username = "%s" """ %userName
@@ -162,8 +153,6 @@ if __name__ == '__main__':
     camID = raw_input("Enter ID : ")
 
     cameraLocation = camDict[camID]
-
-        
 
     sendQueue = Queue()
     responseQueue = Queue()
@@ -216,13 +205,7 @@ if __name__ == '__main__':
         '''
 
         '''end ip stream'''
-        
-
-
-
-
-
-        
+        """
         count = 0
         while True:
            # print count
@@ -230,12 +213,56 @@ if __name__ == '__main__':
             if  count % 60 == 0 :
                 sendQueue.put(img)  
             count += 1
-        
+        """
+        prevFrame = None
+
+        # loop over the frames of the video
+        count = 0
+        while True:
+            # grab the current frame and initialize the occupied/unoccupied
+            # text
+            frame = getFrame()
+            
+            #(grabbed, frame) = camera.read()
+            #text = "Unoccupied"
+            #print "unoccupied"
+
+            # if the frame could not be grabbed, then we have reached the end
+            # of the video
+            #if not grabbed:
+             #   break
+
+            # resize the frame, convert it to grayscale, and blur it
+            frame = imutils.resize(frame, width=500)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+            # if the first frame is None, initialize it
+            if prevFrame is None:
+                prevFrame = gray
+                continue
+
+            # compute the absolute difference between the current frame and
+            # first frame
+            frameDelta = cv2.absdiff(prevFrame, gray)
+            if count%5 == 0:
+                prevFrame = gray
+                count = 1
+            count+=1
+            thresh = cv2.threshold(frameDelta, 127, 255, cv2.THRESH_BINARY)[1]
+            #thresh = cv2.adaptiveThreshold(frameDelta,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
 
 
-
-
-
+            # dilate the thresholded image to fill in holes, then find contours
+            # on thresholded image
+            thresh = cv2.dilate(thresh, None, iterations=2)
+            (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+                cv2.CHAIN_APPROX_SIMPLE)
+            if cnts: 
+                print "occupied"
+                sendQueue.put(frame)  
+            
+       
         sendProcess.join()
     except KeyboardInterrupt:
         sendProcess.join()

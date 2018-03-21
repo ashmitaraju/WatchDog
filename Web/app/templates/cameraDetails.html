@@ -18,7 +18,7 @@
     <div id="dynamicInput">
             <div class="col-sm-4">
                     <div class="form-group">
-         Camera 1<br><input class="form-control" type="text" name="myInputs[]" placeholder="Enter camera number " required value="{{cam.cno}}"><br><input class="form-control" type="text" name="myInputs[]" placeholder="Enter camera location " required value="{{cam.cdesc}}"><br></div></div>
+         Camera {{ cam.cno }}<br><input class="form-control" type="text" name="myInputs[]" placeholder="Enter camera number " required value="{{cam.cno}}"><br><input class="form-control" type="text" name="myInputs[]" placeholder="Enter camera location " required value="{{cam.cdesc}}"><br></div></div>
     </div>
 {% endfor %}
     <input type="button" class="btn btn-info btn-round text-center" value="Add another camera" onClick="addInput('dynamicInput');" >
@@ -41,7 +41,7 @@
 
 
 <script>
-    var counter = 1;
+    var counter = {{ camcount | safe }};
 var limit = 3;
 function addInput(divName){
      if (counter == limit)  {
