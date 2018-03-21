@@ -1,6 +1,5 @@
 from multiprocessing import Process, Queue
 from frameGrabber import getFrame
-from camera import VideoCamera
 #from faceDetectAzure import getFace
 from faceVerify import verifyFace, getFace, getPerson
 #from personDetect import getPerson
@@ -17,12 +16,11 @@ import yaml
 import re
 import sys
 import imutils
+from face_detector import face_detector
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
 
-cm=VideoCamera()
-print type(cm) 
 
 userName = sys.argv[1]
 block_blob_service = BlockBlobService(account_name= config['azure-blob']['account_name'] , account_key= config['azure-blob']['account_key'])
@@ -162,13 +160,13 @@ if __name__ == '__main__':
     sendFaceQueue = Queue()
     responseFaceQueue = Queue()
     try:
-        sendProcess = Process( target = sendFrames, args =(sendQueue, responseQueue,))
-        analyseProcess = Process ( target = analyseResponses, args = (sendQueue, responseQueue,))
-        sendFacesProcess = Process( target = sendFaces, args =(sendFaceQueue, responseFaceQueue,))
+        sendProcess = Process( target = face_detector, args =(sendQueue, responseQueue, True))
+       # analyseProcess = Process ( target = analyseResponses, args = (sendQueue, responseQueue,))
+        sendFacesProcess = Process( target = sendFaces, args =(responseQueue, responseFaceQueue,))
         analyseFacesProcess = Process( target = analyseFaces, args =(sendFaceQueue, responseFaceQueue,))
         parent = os.getpid()
         sendProcess.start()
-        analyseProcess.start()
+        #face_detector.start()
         sendFacesProcess.start()
         analyseFacesProcess.start()
         
@@ -225,7 +223,6 @@ if __name__ == '__main__':
             # grab the current frame and initialize the occupied/unoccupied
             # text
             frame = getFrame()
-            #frame = camera[1].get_frame()
             
             #(grabbed, frame) = camera.read()
             #text = "Unoccupied"
@@ -270,17 +267,23 @@ if __name__ == '__main__':
         sendProcess.join()
     except KeyboardInterrupt:
         sendProcess.join()
-        analyseProcess.join()
+       # analyseProcess.join()
         os.kill(parent, signal.SIGTERM)
 
 
-        
 
-    
 
-    
 
-        
 
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
