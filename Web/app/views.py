@@ -98,6 +98,7 @@ def dashboard():
 
     if form.validate_on_submit:
         print form.date.data
+        return redirect('url_for(''))
 
     return render_template('dashboard.html' ,  profile = profile, form=form)
 
@@ -358,37 +359,11 @@ def removePeople():
     if delPeople:
         for id in delPeople:
             person = Persons.query.filter_by(person_id = id).first()
-            response = deletePerson( current_user.username, person.azure_id)
-            if 
             flash('Deleted Successfully', 'success')
             db.session.delete(person)
             db.session.commit()
     
         return redirect(url_for('uploadImages'))
-
-
-
     return render_template('deletePeople.html', people=people)
-
-@app.route('/viewChart/<date>', methods=['GET', 'POST'])
-@login_required
-def viewChart(date):     
-
-    pics = UnauthImageGallery.query.filter_by(username = current_user.username)
-
-    times = []
-
-    for pic in pics:
-        times.append(pic.timestamp)
-
-
-    plot_times = []
-
-    for time in times:
-        if date == time[:10]:
-            plot_times.append(datetime.strptime(time, "%R"))
-
-
-    return render_template('chart.html', people=people)
 
 
