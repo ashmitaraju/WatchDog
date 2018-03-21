@@ -31,13 +31,13 @@ def detect_faces(image):
 
     # make low res image for detection
     frame_width, frame_height = image.shape[:2]
-    ratio = frame_height//300
+    ratio = frame_height/480.0
     lowres_image = cv2.resize(image, (0, 0), fx=1.0/ratio, fy=1.0/ratio)
     # Run detector and get bounding boxes of the faces on image.
     detected_faces = detector(lowres_image, 1)
 
-    face_frames = [(x.left()*ratio, x.top()*ratio,
-                    x.right()*ratio, x.bottom()*ratio) for x in detected_faces]
+    face_frames = [(int(x.left()*ratio), int(x.top()*ratio),
+                    int(x.right()*ratio), int(x.bottom()*ratio)) for x in detected_faces]
 
     end_time = datetime.now()
     micro_sec = (end_time - start_time).total_seconds()
@@ -68,7 +68,8 @@ def face_detector(frame_queue, face_queue, display=False, save=False):
                     img_path = save + str(datetime.now()) + "-" + str(n) + ".jpg"
                     cv2.imwrite(img_path, face)
                 face_queue.put(face)
-        except Exception:
+        except Exception, e:
+            print e
             continue
 
 
@@ -95,7 +96,6 @@ def read_cam(frames):
             continue
         delay = delay/2
         ret, frame = cam.read()
-        print frame.shape
         frames.put(frame)
 
 
