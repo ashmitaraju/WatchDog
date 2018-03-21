@@ -21,7 +21,9 @@ import imutils
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
 
-camera=VideoCamera()
+cm=VideoCamera()
+print type(cm) 
+
 userName = sys.argv[1]
 block_blob_service = BlockBlobService(account_name= config['azure-blob']['account_name'] , account_key= config['azure-blob']['account_key'])
 
@@ -223,7 +225,7 @@ if __name__ == '__main__':
             # grab the current frame and initialize the occupied/unoccupied
             # text
             frame = getFrame()
-            #frame = camera.get_frame()
+            #frame = camera[1].get_frame()
             
             #(grabbed, frame) = camera.read()
             #text = "Unoccupied"
