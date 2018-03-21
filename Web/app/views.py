@@ -95,11 +95,12 @@ def editProfile():
 def dashboard():
     profile = Profile.query.filter_by(username = current_user.username).first()
     form = DateForm()
-
+    """
     if form.validate_on_submit:
         print form.date.data
-
-    return render_template('dashboard.html' ,  profile = profile, form=form)
+        return redirect('url_for(''))
+    """
+    return render_template('dashboard.html' ,  profile = profile)
 
 @app.route('/logout')
 @login_required
@@ -241,10 +242,11 @@ def viewPerson(user):
             img = AuthImageGallery.query.filter_by(imgid = f).first()
             print img
             block_blob_service.delete_blob('video', img.image_filename)
-            flash('Deleted Successfully', 'success')
+            
             #os.remove(os.path.join(app.config['UPLOADED_IMAGES_DEST'], img.image_filename))
             db.session.delete(img)
             db.session.commit()
+        flash('Deleted Successfully', 'success')
         return redirect(url_for('uploadImages'))
     return render_template('deleteImages.html' , pics = listPics, user1 = user)
 
@@ -357,37 +359,15 @@ def removePeople():
     
     if delPeople:
         for id in delPeople:
+<<<<<<< HEAD
             person = Persons.query.filter_by(person_id = id).first()
             response = deletePerson( current_user.username, person.azure_id)
             flash('Deleted Successfully', 'success')
+=======
+            person = Persons.query.filter_by(person_id = id).first()        
+>>>>>>> e5c80c934e0712ae23cc9c1bc3586e72a54d2a80
             db.session.delete(person)
             db.session.commit()
-    
+        flash('Deleted Successfully', 'success')
         return redirect(url_for('uploadImages'))
-
-
-
     return render_template('deletePeople.html', people=people)
-
-@app.route('/viewChart/<date>', methods=['GET', 'POST'])
-@login_required
-def viewChart(date):     
-
-    pics = UnauthImageGallery.query.filter_by(username = current_user.username)
-
-    times = []
-
-    for pic in pics:
-        times.append(pic.timestamp)
-
-
-    plot_times = []
-
-    for time in times:
-        if date == time[:10]:
-            plot_times.append(datetime.strptime(time, "%R"))
-
-
-    return render_template('chart.html', people=people)
-
-
