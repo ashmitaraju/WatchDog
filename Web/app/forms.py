@@ -49,3 +49,7 @@ class EditImageGalleryForm(Form):
     submit = SubmitField('Add Person')
     skip = SubmitField('Submit and Train')
 
+class DateForm(Form): 
+    date = DateField('Enter Date' , validators=[InputRequired()])
+    submit = SubmitField('Submit')
+

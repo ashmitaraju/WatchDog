@@ -31,6 +31,30 @@ def addFace ( GROUP_ID, PERSON_ID, PATH_TO_IMAGE):
     conn.close()
     return json.loads (data)
 
+def deletePerson (GROUP_ID, PERSON_ID):
+    headers = {
+    # Request headers
+   # 'Content-Type': 'application/json',
+    'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
+    }
+    personGroupId = GROUP_ID
+    personId = PERSON_ID
+
+    body = ""
+
+    #print body
+  #  print PATH_TO_IMAGE
+    conn = httplib.HTTPSConnection('westcentralus.api.cognitive.microsoft.com')
+    conn.request("DELETE", "/face/v1.0/persongroups/%s/persons/%s" %(personGroupId, personId) , body, headers)
+    response = conn.getresponse()
+    print response.status
+    data = response.read()
+    print (data)
+    conn.close()
+    return json.loads (data)
+
+
+
 
 def addPerson ( GROUP_ID, PERSON_NAME, PERSON_DATA ):
     headers = {
@@ -54,6 +78,8 @@ def addPerson ( GROUP_ID, PERSON_NAME, PERSON_DATA ):
    # print "person id = " + data
     conn.close()
     return data
+
+
 
     
 def createGroup ( GROUP_ID, PERSON_NAME, PERSON_DATA):
