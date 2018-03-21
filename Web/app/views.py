@@ -106,14 +106,16 @@ def logout():
 @app.route('/cameraDetails' , methods = ['GET' , 'POST'])
 @login_required
 def cameraDetails():
+    #camcount=1
     camera = Camera.query.filter_by(username = current_user.username).all()
+    camcount=len(camera)
     if request.method == 'POST':
         if request.form['submit'] == 'Submit':
             detailsList = request.form.getlist('myInputs[]')
             CameraNoList = detailsList[0::2]
             CameraDescList = detailsList[1::2]
             length = len(CameraNoList)
-            
+            camcount=length+2
             for i in range(0,length):
                 existing_camera = Camera.query.filter_by(cno=CameraNoList[i]).first()
                 if existing_camera is None:
@@ -124,7 +126,7 @@ def cameraDetails():
                     existing_camera.cdesc = CameraDescList[i]
                     db.session.commit()
             return redirect(url_for('dashboard'))
-    return render_template('cameraDetails.html' , camera=camera, camcount=length )
+    return render_template('cameraDetails.html' , camera=camera, camcount=camcount )
 
 
 @app.route('/unAuth' , methods = ['GET' , 'POST'])
@@ -336,6 +338,27 @@ def getWebcamPics(user):
                     print "done"
         
         
- 
+@app.route('/removePeople', methods=['GET', 'POST'])
+@login_required
+def removePeople():     
+    people = Persons.query.filter_by(username = current_user.username).all()
+
+    delPeople = []
+    if request.method == "POST":
+        delPeople = request.form.getlist('users')
+    print delPeople
+    
+    if delPeople:
+        for id in delPeople:
+            person = Persons.query.filter_by(person_id = id).first()
+            flash('Deleted Successfully', 'success')
+            db.session.delete(person)
+            db.session.commit()
+    
+        return redirect(url_for('uploadImages'))
+
+
+
+    return render_template('deletePeople.html', people=people)
 
 

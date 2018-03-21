@@ -22,7 +22,7 @@
                             <div class="col-md-12">
                                     {% for ppl in peopleDict: %}
                                     <div class="image floated_img" >
-                                      <a href="{{ url_for('viewPerson' , user =ppl.person_id) }}" >{{ppl.person_name}} </a>
+                                      <a href="{{ url_for('viewPerson' , user =ppl.person_id) }}" >{{ppl.person_name}} </a> <br>
                                       <img src= {{ peopleDict[ppl].image_path }} id="myImage" class="img-rounded img-raised object-fit_cover"  width="120" > 
                                       <br>
                                       </div>
@@ -33,12 +33,13 @@
 
                             <form method="post" enctype=multipart/form-data>
                                     {{ form.hidden_tag() }}
-                                    {{ form.name(class_="form-control", placeholder="Enter Another Person") }}
-
+                                    {{ form.name(class_="form-control", placeholder="Enter Another Person" , required='required') }}
                                     {{ form.submit(class_="btn btn-info btn-round text-center") }}
                             </form>
 
-                          
+                            <a href="{{ url_for('removePeople') }}" class="btn btn-info btn-round text-center">Remove People </a>
+
+                    
                     </div>
                 </div>
               </div>

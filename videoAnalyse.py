@@ -1,5 +1,6 @@
 from multiprocessing import Process, Queue
 from frameGrabber import getFrame
+from camera import VideoCamera
 #from faceDetectAzure import getFace
 from faceVerify import verifyFace, getFace, getPerson
 #from personDetect import getPerson
@@ -20,7 +21,7 @@ import imutils
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
 
-
+camera=VideoCamera()
 userName = sys.argv[1]
 block_blob_service = BlockBlobService(account_name= config['azure-blob']['account_name'] , account_key= config['azure-blob']['account_key'])
 
@@ -222,6 +223,7 @@ if __name__ == '__main__':
             # grab the current frame and initialize the occupied/unoccupied
             # text
             frame = getFrame()
+            #frame = camera.get_frame()
             
             #(grabbed, frame) = camera.read()
             #text = "Unoccupied"
