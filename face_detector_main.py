@@ -28,8 +28,7 @@ if __name__ == '__main__':
         frame_getter_process.join()
         face_detector_process.join()
         if e is KeyboardInterrupt:
-            cv2.destroyAllWindows()
             exit(1)
         else:
-            raise e
+            cv2.destroyAllWindows()
             exit(2)
