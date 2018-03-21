@@ -5,6 +5,7 @@ from multiprocessing import Process, Queue
 import signal
 import time
 
+
 def rect_to_bb(rect):
     # take a bounding predicted by dlib and convert it
     # to the format (x, y, w, h) as we would normally do
@@ -19,6 +20,7 @@ def rect_to_bb(rect):
 
 
 detector = dlib.get_frontal_face_detector()
+
 
 def detect_faces(image):
     # Create a face detector
@@ -39,7 +41,7 @@ def detect_faces(image):
 
     end_time = datetime.now()
     micro_sec = (end_time - start_time).total_seconds()
-    print "dlib time/frame: " + str(micro_sec) + " | fps: " + str(1 / micro_sec)
+    # print "dlib time/frame: " + str(micro_sec) + " | fps: " + str(1 / micro_sec)
 
     return face_frames
 
@@ -86,7 +88,7 @@ def read_cam(frames):
 
     delay = 0.001
     while True:
-        print "delay: "+str(delay)
+        # print "delay: "+str(delay)
         if frames.full():
             delay = delay*2
             time.sleep(delay)
