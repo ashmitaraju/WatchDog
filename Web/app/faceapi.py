@@ -31,7 +31,7 @@ def addFace ( GROUP_ID, PERSON_ID, PATH_TO_IMAGE):
     conn.close()
     return json.loads (data)
 
-def deletePerson ( GROUP_ID, PERSON_ID):
+def deletePerson (GROUP_ID, PERSON_ID):
     headers = {
     # Request headers
    # 'Content-Type': 'application/json',
@@ -52,9 +52,6 @@ def deletePerson ( GROUP_ID, PERSON_ID):
     print (data)
     conn.close()
     return json.loads (data)
-
-
-
 
 
 
