@@ -95,12 +95,12 @@ def editProfile():
 def dashboard():
     profile = Profile.query.filter_by(username = current_user.username).first()
     form = DateForm()
-
+    """
     if form.validate_on_submit:
         print form.date.data
         return redirect('url_for(''))
-
-    return render_template('dashboard.html' ,  profile = profile, form=form)
+    """
+    return render_template('dashboard.html' ,  profile = profile)
 
 @app.route('/logout')
 @login_required
@@ -242,10 +242,11 @@ def viewPerson(user):
             img = AuthImageGallery.query.filter_by(imgid = f).first()
             print img
             block_blob_service.delete_blob('video', img.image_filename)
-            flash('Deleted Successfully', 'success')
+            
             #os.remove(os.path.join(app.config['UPLOADED_IMAGES_DEST'], img.image_filename))
             db.session.delete(img)
             db.session.commit()
+        flash('Deleted Successfully', 'success')
         return redirect(url_for('uploadImages'))
     return render_template('deleteImages.html' , pics = listPics, user1 = user)
 
@@ -358,12 +359,9 @@ def removePeople():
     
     if delPeople:
         for id in delPeople:
-            person = Persons.query.filter_by(person_id = id).first()
-            flash('Deleted Successfully', 'success')
+            person = Persons.query.filter_by(person_id = id).first()        
             db.session.delete(person)
             db.session.commit()
-    
+        flash('Deleted Successfully', 'success')
         return redirect(url_for('uploadImages'))
     return render_template('deletePeople.html', people=people)
-
-

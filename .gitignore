@@ -10,7 +10,6 @@ images
 base_camera.py
 motionDetection.py
 t.jpg
-templates/
 web.py
 camera.py
 
