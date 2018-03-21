@@ -20,8 +20,14 @@ def rect_to_bb(rect):
 def detect_faces(image):
     # Create a face detector
     detector = dlib.get_frontal_face_detector()
+
     # Run detector and get bounding boxes of the faces on image.
+    start_time = datetime.now()
     detected_faces = detector(image, 1)
+    end_time = datetime.now()
+    micro_sec = (end_time - start_time).total_seconds()
+    print "dlib time/frame: " + str(micro_sec) + " | fps: " + str(1/micro_sec)
+
     face_frames = [(x.left(), x.top(),
                     x.right(), x.bottom()) for x in detected_faces]
     return face_frames
@@ -32,6 +38,7 @@ def face_detector(frame_queue, face_queue, display=False, save=False):
         if frame_queue.empty():
             continue
         frame = frame_queue.get()
+        datetime.now
         face_coordinates = detect_faces(frame)
         print face_coordinates
         for n, face_coordinates in enumerate(face_coordinates):
@@ -60,14 +67,28 @@ def read_cam(frames):
 
 
 if __name__ == '__main__':
-    print "main"
-    frames = Queue(10)
-    faces = Queue()
-    process1 = Process(target=face_detector, args=(frames, faces))
-    process2 = Process(target=read_cam, args=(frames,))
-    process1.start()
-    process2.start()
+    try:
+        print "main"
+        frames = Queue(10)
+        faces = Queue()
+        frame_getter_process = Process(target=face_detector, args=(frames, faces))
+        face_detector_process = Process(target=read_cam, args=(frames,))
 
-    process1.join()
-    process2.join()
-    exit(1)
+        frame_getter_process.daemon = True
+        face_detector_process.daemon = True
+        frame_getter_process.start()
+        face_detector_process.start()
+
+        frame_getter_process.join()
+        face_detector_process.join()
+
+        cv2.destroyAllWindows()
+        exit(1)
+    except Exception, e:
+        print e
+        if e is KeyboardInterrupt:
+            cv2.destroyAllWindows()
+            exit(1)
+        else:
+            raise e
+
