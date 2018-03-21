@@ -48,22 +48,26 @@ def face_detector(frame_queue, face_queue, display=False, save=False):
     while True:
         if frame_queue.empty():
             continue
-
+        if face_queue.full():
+            continue
         frame = frame_queue.get()
         face_coordinates = detect_faces(frame)
 
-        for n, face_coordinates in enumerate(face_coordinates):
-            (x, y, w, h) = rect_to_bb(face_coordinates)
-            face = frame[y:h, x:w]
-            if display:
-                frame_scanned = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                cv2.imshow("Face Detector", frame_scanned)
-                cv2.waitKey(5)
-            if save:
-                img_path = save + str(datetime.now()) + "-" + str(n) + ".jpg"
-                cv2.imwrite(img_path, face)
-            face_queue.put(face)
-
+        try:
+            for n, face_coordinates in enumerate(face_coordinates):
+                (x, y, w, h) = rect_to_bb(face_coordinates)
+                face = frame[y:y+h, x:x+w]
+                if display:
+                    frame_scanned = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                    cv2.imshow("Face Detector", frame_scanned)
+                    cv2.imshow("faces", face)
+                    cv2.waitKey(5)
+                if save:
+                    img_path = save + str(datetime.now()) + "-" + str(n) + ".jpg"
+                    cv2.imwrite(img_path, face)
+                face_queue.put(face)
+        except Exception:
+            continue
 
 
 def read_cam(frames):
@@ -92,35 +96,4 @@ def read_cam(frames):
         print frame.shape
         frames.put(frame)
 
-
-if __name__ == '__main__':
-    print "main"
-    frames = Queue(10)
-    faces = Queue()
-    frame_getter_process = Process(target=face_detector, args=(frames, faces, True))
-    face_detector_process = Process(target=read_cam, args=(frames,))
-
-    frame_getter_process.daemon = True
-    face_detector_process.daemon = True
-    original_signal_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-    frame_getter_process.start()
-    face_detector_process.start()
-    signal.signal(signal.SIGINT, original_signal_handler)
-    try:
-        frame_getter_process.join()
-        face_detector_process.join()
-        cv2.destroyAllWindows()
-        exit(1)
-    except Exception, e:
-        print e
-        frame_getter_process.terminate()
-        face_detector_process.terminate()
-        frame_getter_process.join()
-        face_detector_process.join()
-        if e is KeyboardInterrupt:
-            cv2.destroyAllWindows()
-            exit(1)
-        else:
-            raise e
-            exit(2)
 
