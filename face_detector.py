@@ -20,7 +20,7 @@ def rect_to_bb(rect):
 def detect_faces(image):
     # Create a face detector
     detector = dlib.get_frontal_face_detector()
-
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Run detector and get bounding boxes of the faces on image.
     start_time = datetime.now()
     detected_faces = detector(image, 1)
@@ -63,6 +63,7 @@ def read_cam(frames):
         if frames.full():
             continue
         ret, frame = cam.read()
+        print frame.shape
         frames.put(frame)
 
 
