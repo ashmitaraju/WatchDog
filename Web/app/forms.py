@@ -46,6 +46,6 @@ class EditImageGalleryForm(Form):
     name = StringField('Add New Person', validators = [InputRequired()])
     image = FileField('Upload Picture(s)', validators=[myvalidator, Optional() , FileAllowed(images, 'Image only!')])
     picture = SubmitField('Take Pictures')
-    submit = SubmitField('Add Images')
+    submit = SubmitField('Add Person')
     skip = SubmitField('Submit and Train')
 
