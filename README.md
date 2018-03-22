@@ -15,7 +15,7 @@ If there is some motion detected, a local face detector is run on the frames. If
 ## FaceAPI
 WatchDog makes use of the Azure Face API to train and recognize the faces of trusted individuals. When faces of trusted individuals are encountered, no action is taken. If it comes across an unrecognized face, it saved in the database with the timestamp and also the location of the camera.  
 
-### Multiple Cameras 
+## Multiple Cameras 
 
 If there are multiple cameras set up for a particular account, they can be tracked separately on the website, under the tab Security Breaches. 
 
