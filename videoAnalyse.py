@@ -16,6 +16,7 @@ import yaml
 import re
 import sys
 import imutils
+import Tkinter
 from face_detector import face_detector
 
 with open("config.yaml", "r") as f:
@@ -46,7 +47,6 @@ for result in results:
 
 camID = ""
     
-#database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'} 
 def sendFrames(sendQueue, responseQueue):
 
     while True:
@@ -112,7 +112,7 @@ def analyseFaces (sendFaceQueue, responseFaceQueue):
                 
                 if verified:
                     for verifiedFace in verified:
-                        #print type (verifiedFace)
+                        #print type verifiedFace
                         if verifiedFace["candidates"]:
                             for candidate in verifiedFace["candidates"]:
                                 found = candidate["personId"]

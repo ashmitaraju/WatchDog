@@ -58,7 +58,7 @@ def face_detector(frame_queue, face_queue, display=False, save=False):
         try:
             for n, face_coordinates in enumerate(face_coordinates):
                 (x, y, w, h) = rect_to_bb(face_coordinates)
-                face = frame[y:y+h, x:x+w]
+                face = frame[y - 10 :y+h +10, x -10:x+w+10 ]
                 if display:
                     frame_scanned = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     cv2.imshow("Face Detector", frame_scanned)

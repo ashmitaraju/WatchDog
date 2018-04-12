@@ -24,7 +24,7 @@ def verifyFace(faceIds, GROUP_ID):
     conn.request("POST", "/face/v1.0/identify" , body, headers)
     response = conn.getresponse()
     data = response.read()
-    #print data 
+   # print data 
     data = json.loads (data)
     conn.close()
     return data
@@ -51,7 +51,7 @@ def getPerson(img):
     # print "person id = " + data
     conn.close()
     data = json.loads(data)
-    print data
+   # print data
    # if data["faces"]:
         #print data["faces"]
     return data
@@ -79,13 +79,13 @@ def getFace(face):
         conn.request("POST", "/face/v1.0/detect?%s" % params, body, headers)
         response = conn.getresponse()
         data = response.read()
-
         # 'data' contains the JSON data. The following formats the JSON data for display.
         parsed = json.loads(data)
         # print ("Response:")
         #print (json.dumps(parsed, sort_keys=True, indent=2))
         conn.close()
-
+      #  print "getFace"
+       # print parsed
         return parsed
 
     except Exception as e:
