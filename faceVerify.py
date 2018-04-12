@@ -7,7 +7,7 @@ with open("config.yaml", "r") as f:
     config = yaml.load(f)
 
 
-def verify_face(face_ids, group_id):
+def face_verify(face_ids, group_id):
     headers = {
         # Request headers
         # 'Content-Type': 'application/octet-stream',

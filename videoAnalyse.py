@@ -1,6 +1,5 @@
 from multiprocessing import Process, Queue
-from frameGrabber import get_frame
-from faceVerify import verify_face, get_face, get_person
+from faceVerify import face_verify, get_face, get_person
 from datetime import datetime
 import os
 import cv2
@@ -9,7 +8,7 @@ import MySQLdb
 import yaml
 import re
 import sys
-import imutils
+from motionDetector import motion_detector
 from face_detector import face_detector
 
 with open("config.yaml", "r") as f:
@@ -77,7 +76,7 @@ def analyse_faces(response_face_queue):
                 fid = str(face["faceId"])
                 # print fid
                 face_ids.append(fid)
-                verified = verify_face(face_ids, userName)
+                verified = face_verify(face_ids, userName)
                 # print type ( verified )
                 found = None
                 if verified:
@@ -127,63 +126,27 @@ if __name__ == '__main__':
 
     cameraLocation = camDict[camID]
 
+    cam_host = 0
+
     sendQueue = Queue()
     responseQueue = Queue()
     responseFaceQueue = Queue()
     try:
+        motionDetect = Process(target=motion_detector, args=(sendQueue, cam_host))
         sendProcess = Process(target=face_detector, args=(sendQueue, responseQueue, True))
         sendFacesProcess = Process(target=send_faces, args=(responseQueue, responseFaceQueue,))
         analyseFacesProcess = Process(target=analyse_faces, args=(responseFaceQueue,))
         parent = os.getpid()
+
+        motionDetect.start()
         sendProcess.start()
         # face_detector.start()
         sendFacesProcess.start()
         analyseFacesProcess.start()
 
-        prevFrame = None
-
-        # loop over the frames of the video
-        count = 0
         host = config["IPcam"]["hostIP"]
         host_str = 'http://' + host + '/videofeed'
 
-        while True:
-            # grab the current frame and initialize the occupied/unoccupied
-            # text
-            frame = get_frame()
-
-            # if the frame could not be grabbed, then we have reached the end
-            # of the video
-            # if not grabbed:
-            #   break
-
-            # resize the frame, convert it to gray scale, and blur it
-            frame = imutils.resize(frame, width=500)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            gray = cv2.GaussianBlur(gray, (21, 21), 0)
-
-            # if the first frame is None, initialize it
-            if prevFrame is None:
-                prevFrame = gray
-                continue
-
-            # compute the absolute difference between the current frame and
-            # first frame
-            frameDelta = cv2.absdiff(prevFrame, gray)
-            if count % 5 == 0:
-                prevFrame = gray
-                count = 1
-            count += 1
-            thresh = cv2.threshold(frameDelta, 127, 255, cv2.THRESH_BINARY)[1]
-
-            # dilate the thresholded image to fill in holes, then find contours
-            # on thresholded image
-            thresh = cv2.dilate(thresh, None, iterations=2)
-            (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            if cnts:
-                # print "occupied"
-                sendQueue.put(frame)
-
     except KeyboardInterrupt:
-        exit(0)
+            exit(0)
+
