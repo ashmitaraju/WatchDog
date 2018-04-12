@@ -12,7 +12,7 @@ motionDetection.py
 t.jpg
 web.py
 camera.py
-
+.vscode/
 
 
 # Created by https://www.gitignore.io/api/django,python,pycharm,virtualenv
