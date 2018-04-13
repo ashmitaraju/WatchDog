@@ -2,6 +2,7 @@ import httplib
 import urllib
 import json
 import yaml
+import signal
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)

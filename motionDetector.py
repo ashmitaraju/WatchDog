@@ -8,7 +8,7 @@ def motion_detector(send_queue, cam_host=0):
 
     # loop over the frames of the video
     count = 0
-    # cam = cam = cv2.VideoCapture('http://' + config["IPcam"]["hostIP"] + '/videofeed')
+
     cam = cv2.VideoCapture(cam_host)
 
     while True:

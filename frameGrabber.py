@@ -10,7 +10,7 @@ with open("config.yaml", "r") as f:
 
 def get_frame(cam):
     # print "hi"
-    
+
     img = cam.read()[1]
     img = cv2.flip(img, 1)
     cv2.imshow("Cam Frames", img)
