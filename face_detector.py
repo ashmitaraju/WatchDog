@@ -1,8 +1,6 @@
 import cv2
 from datetime import datetime
 import dlib
-from multiprocessing import Process, Queue
-import signal
 import time
 
 
@@ -16,7 +14,7 @@ def rect_to_bb(rect):
     h = rect[3] - y
 
     # return a tuple of (x, y, w, h)
-    return (x, y, w, h)
+    return x, y, w, h
 
 
 detector = dlib.get_frontal_face_detector()
@@ -46,7 +44,7 @@ def detect_faces(image):
     return face_frames
 
 
-def face_detector(frame_queue, face_queue, display=False, save=False):
+def face_detector(frame_queue, face_queue, display=False, save = False):
     while True:
         if frame_queue.empty():
             continue
@@ -65,7 +63,7 @@ def face_detector(frame_queue, face_queue, display=False, save=False):
                     cv2.imshow("faces", face)
                     cv2.waitKey(5)
                 if save:
-                    img_path = save + str(datetime.now()) + "-" + str(n) + ".jpg"
+                    img_path = str(save) + str(datetime.now()) + "-" + str(n) + ".jpg"
                     cv2.imwrite(img_path, face)
                 face_queue.put(face)
         except Exception, e:
@@ -97,5 +95,3 @@ def read_cam(frames):
         delay = delay/2
         ret, frame = cam.read()
         frames.put(frame)
-
-

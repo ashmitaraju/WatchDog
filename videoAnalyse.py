@@ -1,42 +1,33 @@
 from multiprocessing import Process, Queue
-from frameGrabber import getFrame
-#from faceDetectAzure import getFace
-from faceVerify import verifyFace, getFace, getPerson
-#from personDetect import getPerson
+from faceVerify import face_verify, get_face
 from datetime import datetime
 import os
-import signal
-import json
 import cv2
-import urllib2
-import numpy as np
-from azure.storage.blob import BlockBlobService , ContentSettings
+from azure.storage.blob import BlockBlobService
 import MySQLdb
 import yaml
 import re
 import sys
-import imutils
-import Tkinter
+from motionDetector import motion_detector
 from face_detector import face_detector
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
 
-
 userName = sys.argv[1]
-block_blob_service = BlockBlobService(account_name= config['azure-blob']['account_name'] , account_key= config['azure-blob']['account_key'])
+block_blob_service = BlockBlobService(account_name=config['azure-blob']['account_name'],
+                                      account_key=config['azure-blob']['account_key'],
+                                      )
 
 sql = config['mysql']
-db = MySQLdb.connect( sql['server'] ,sql['username'] , sql['password'] ,sql['database'] )
+db = MySQLdb.connect(sql['server'], sql['username'], sql['password'], sql['database'])
 cursor = db.cursor()
-
-
 
 query = """select azure_id, person_name from Persons, AuthImageGallery
          where Persons.person_id=AuthImageGallery.person_id 
-         and Persons.username= '%s'""" %userName
+         and Persons.username= '%s'""" % userName
 
-cursor.execute( query )
+cursor.execute(query)
 
 results = cursor.fetchall()
 
@@ -44,253 +35,118 @@ database = {}
 for result in results:
     database[result[0]] = result[1]
 
-
 camID = ""
-    
-def sendFrames(sendQueue, responseQueue):
 
+
+# database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'}
+def send_frames(send_queue, response_queue):
     while True:
-        while sendQueue.empty():
-            pass  
-        img = sendQueue.get()    
-        cv2.imshow("Sent Frame",img)
+        while send_queue.empty():
+            pass
+        img = send_queue.get()
+        cv2.imshow("Sent Frame", img)
         print "sent frame"
         cv2.waitKey(5)
-        frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
-        response = getPerson (frameBytes)
-        responseQueue.put([response , img])
-    
+        frame_bytes = cv2.imencode('.jpg', img)[1].tostring()
+        response = get_person(frame_bytes)
+        response_queue.put([response, img])
 
 
-def analyseResponses(sendQueue, responseQueue): 
+def send_faces(send_face_queue, response_face_queue):
     while True:
-        while responseQueue.empty():
-            pass  
-        response = responseQueue.get()
-
-        if response[0]:
-            for face in response[0]["faces"]:
-                timeStamp = str(datetime.now())
-                faceRectangle = face["faceRectangle"]
-                
-                y = faceRectangle["top"]
-                x = faceRectangle["left"]
-                h = faceRectangle["height"]
-                w = faceRectangle["width"]
-                crop_img = response[1][y:y+h, x:x+w]
-                sendFaceQueue.put( crop_img )
-                cv2.imwrite( "images/%s.jpg" %timeStamp, crop_img )
-        else :
-            print "No faces in frame"
-
-def sendFaces (sendFaceQueue, responseFaceQueue):
-    while True:
-        while sendFaceQueue.empty():
-            pass  
-        img = sendFaceQueue.get()    
-        cv2.imshow("Sent Face",img)
+        while send_face_queue.empty():
+            pass
+        img = send_face_queue.get()
+        cv2.imshow("Sent Face", img)
         cv2.waitKey(5)
-        frameBytes = cv2.imencode('.jpg', img )[1].tostring()    
-        response = getFace(frameBytes)
-        responseFaceQueue.put([response , frameBytes])
+        frame_bytes = cv2.imencode('.jpg', img)[1].tostring()
+        response = get_face(frame_bytes)
+        response_face_queue.put([response, frame_bytes])
 
 
-def analyseFaces (sendFaceQueue, responseFaceQueue):
+def analyse_faces(response_face_queue):
     while True:
-        while responseFaceQueue.empty():
-            pass  
-        response = responseFaceQueue.get()
-        faceIds = []
+        while response_face_queue.empty():
+            pass
+        response = response_face_queue.get()
+        face_ids = []
         if response[0]:
             for face in response[0]:
-                #print face
-                fid = str (face["faceId"])
-                #print fid
-                faceIds.append(fid)
-                verified = verifyFace(faceIds , userName)
-                #print type ( verified )
-                
+                print face
+                fid = str(face["faceId"])
+                # print fid
+                face_ids.append(fid)
+                verified = face_verify(face_ids, userName)
+                # print type ( verified )
+                found = None
                 if verified:
                     for verifiedFace in verified:
-                        #print type verifiedFace
+                        # print type (verifiedFace)
                         if verifiedFace["candidates"]:
                             for candidate in verifiedFace["candidates"]:
                                 found = candidate["personId"]
                             if found in database:
                                 print database[found]
 
-                        else :
+                        else:
                             timestamp = str(datetime.now())
                             filename = re.sub(r' ', '_', timestamp)
-                            #print filename
+                            # print filename
 
                             block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
                             url = "https://watchdogsok.blob.core.windows.net/unauthorized/%s" % filename
-                            query = """insert into UnauthImageGallery(username, image_filename, image_path,timestamp,cameraID, cameraLocation ) values('%s', '%s', '%s' , '%s', '%s', '%s')"""%( userName, filename, url, timestamp, camID, cameraLocation)
-                            #query = """select * from Persons"""
-                           # print query
-                            cursor.execute( query )
+                            query_send_unauth = """
+insert into UnauthImageGallery(username, image_filename, image_path, timestamp, cameraID, cameraLocation) 
+values('%s', '%s', '%s' , '%s', '%s', '%s')""" % (userName, filename, url, timestamp, camID, cameraLocation)
+                            # query = """select * from Persons"""
+                            # print query
+                            cursor.execute(query_send_unauth)
                             db.commit()
-                            #print cursor.fetchall()
+                            # print cursor.fetchall()
                             print "Face not authorized"
-
-        else :
+        else:
             pass
-           # print "No faces in frame"
-     
-if __name__ == '__main__':
+            # print "No faces in frame"
 
-    query = """select * from camera where username = "%s" """ %userName
+
+if __name__ == '__main__':
+    query = """select * from camera where username = "%s" """ % userName
     cursor.execute(query)
     cameras = cursor.fetchall()
 
     print "ID\tCamera Location"
 
     camDict = {}
-    for camera in cameras :
-        print "%s\t%s" %(camera[0],camera[2])
-        camDict[ camera[0]] = camera[2]
+    for camera in cameras:
+        print "%s\t%s" % (camera[0], camera[2])
+        camDict[camera[0]] = camera[2]
 
     print camDict
     camID = raw_input("Enter ID : ")
 
     cameraLocation = camDict[camID]
 
+    cam_host = 0
+
     sendQueue = Queue()
     responseQueue = Queue()
-    sendFaceQueue = Queue()
     responseFaceQueue = Queue()
     try:
-        sendProcess = Process( target = face_detector, args =(sendQueue, responseQueue, True))
-       # analyseProcess = Process ( target = analyseResponses, args = (sendQueue, responseQueue,))
-        sendFacesProcess = Process( target = sendFaces, args =(responseQueue, responseFaceQueue,))
-        analyseFacesProcess = Process( target = analyseFaces, args =(sendFaceQueue, responseFaceQueue,))
+        motionDetect = Process(target=motion_detector, args=(sendQueue, cam_host))
+        sendProcess = Process(target=face_detector, args=(sendQueue, responseQueue, True, '../images/detect_images/'))
+        sendFacesProcess = Process(target=send_faces, args=(responseQueue, responseFaceQueue,))
+        analyseFacesProcess = Process(target=analyse_faces, args=(responseFaceQueue,))
         parent = os.getpid()
+
+        motionDetect.start()
         sendProcess.start()
-        #face_detector.start()
+       # face_detector.start()
         sendFacesProcess.start()
-        analyseFacesProcess.start()
-        
-        ''' start ipStream'''
-        '''
-    
-        host = config['IPcam']['hostIP']
-        #print host
-	
-      #  if len(sys.argv)>1:
-       #     host = sys.argv[1]
+      #  analyseFacesProcess.start()
 
-        hoststr = 'http://' + host + '/videofeed'
-        print 'Streaming ' + hoststr
-
-        stream = urllib2.urlopen(hoststr)
-
-        bytes=''
-        count = 0
-        while True:
-            bytes+=stream.read(1024)
-            a = bytes.find('\xff\xd8')
-            b = bytes.find('\xff\xd9')
-            if a!=-1 and b!=-1:
-                jpg = bytes[a:b+2]
-                bytes= bytes[b+2:]
-                i = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.IMREAD_COLOR)
-                cv2.imshow(hoststr,i)
-                if  count % 10 == 0 :
-                    sendQueue.put(i) 
-                    print 'sent'
-                
-                if cv2.waitKey(5) ==27:
-                    exit(0)
-                count += 1
-                #print count
-        '''
-
-        '''end ip stream'''
-        """
-        count = 0
-        while True:
-           # print count
-            img = getFrame()
-            if  count % 60 == 0 :
-                sendQueue.put(img)  
-            count += 1
-        """
-        prevFrame = None
-
-        # loop over the frames of the video
-        count = 0
         host = config["IPcam"]["hostIP"]
-        hoststr = 'http://' + host + '/videofeed'
-        
-        bytes = ""
-        while True:
-            # grab the current frame and initialize the occupied/unoccupied
-            # text
-            frame = getFrame()
-            
-            #(grabbed, frame) = camera.read()
-            #text = "Unoccupied"
-            #print "unoccupied"
+        host_str = 'http://' + host + '/videofeed'
 
-            # if the frame could not be grabbed, then we have reached the end
-            # of the video
-            #if not grabbed:
-             #   break
-
-            # resize the frame, convert it to grayscale, and blur it
-            frame = imutils.resize(frame, width=500)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            gray = cv2.GaussianBlur(gray, (21, 21), 0)
-
-            # if the first frame is None, initialize it
-            if prevFrame is None:
-                prevFrame = gray
-                continue
-
-            # compute the absolute difference between the current frame and
-            # first frame
-            frameDelta = cv2.absdiff(prevFrame, gray)
-            if count%5 == 0:
-                prevFrame = gray
-                count = 1
-            count+=1
-            thresh = cv2.threshold(frameDelta, 127, 255, cv2.THRESH_BINARY)[1]
-            #thresh = cv2.adaptiveThreshold(frameDelta,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
-
-
-            # dilate the thresholded image to fill in holes, then find contours
-            # on thresholded image
-            thresh = cv2.dilate(thresh, None, iterations=2)
-            (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-                cv2.CHAIN_APPROX_SIMPLE)
-            if cnts: 
-               # print "occupied"
-                sendQueue.put(frame)  
-            
-       
-        sendProcess.join()
     except KeyboardInterrupt:
-        sendProcess.join()
-    
-
-       # analyseProcess.join()
-        os.kill(parent, signal.SIGTERM)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            exit(0)
 
