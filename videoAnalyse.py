@@ -44,6 +44,7 @@ def send_frames(send_queue, response_queue):
         while send_queue.empty():
             pass
         img = send_queue.get()
+
         cv2.imshow("Sent Frame", img)
         print "sent frame"
         cv2.waitKey(5)
@@ -57,6 +58,7 @@ def send_faces(send_face_queue, response_face_queue):
         while send_face_queue.empty():
             pass
         img = send_face_queue.get()
+        # window_sent_face = cv2.namedWindow("Sent Face", cv2.WINDOW_NORMAL)
         cv2.imshow("Sent Face", img)
         cv2.waitKey(5)
         frame_bytes = cv2.imencode('.jpg', img)[1].tostring()
@@ -127,26 +129,37 @@ if __name__ == '__main__':
     cameraLocation = camDict[camID]
 
     cam_host = 0
+    # cam_host = 'http://' + config["IPcam"]["hostIP"] + '/videofeed'
 
     sendQueue = Queue()
     responseQueue = Queue()
     responseFaceQueue = Queue()
+    processList = []
     try:
         motionDetect = Process(target=motion_detector, args=(sendQueue, cam_host))
         sendProcess = Process(target=face_detector, args=(sendQueue, responseQueue, True, '../images/detect_images/'))
         sendFacesProcess = Process(target=send_faces, args=(responseQueue, responseFaceQueue,))
         analyseFacesProcess = Process(target=analyse_faces, args=(responseFaceQueue,))
+
+        processList.extend([motionDetect, sendProcess, sendFacesProcess, analyseFacesProcess])
+
+        for proc in processList:
+            proc.daemon = True
+
         parent = os.getpid()
 
-        motionDetect.start()
-        sendProcess.start()
-       # face_detector.start()
-        sendFacesProcess.start()
-      #  analyseFacesProcess.start()
+        for proc in processList:
+            proc.start()
 
         host = config["IPcam"]["hostIP"]
         host_str = 'http://' + host + '/videofeed'
+        while True:
+            pass
 
-    except KeyboardInterrupt:
-            exit(0)
+    except KeyboardInterrupt as e:
+        print "\n\n" + str(e) + "\n\n"
+        for proc in processList:
+            proc.terminate()
+        cv2.destroyAllWindows()
+        exit(0)
 

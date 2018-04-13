@@ -45,5 +45,4 @@ def get_face(face):
     endpoint = "/face/v1.0/detect"
 
     response = requests.post( base_url + endpoint, params = params, headers = headers, data = data )
-
     return response.json()
