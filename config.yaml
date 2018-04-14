@@ -1,6 +1,6 @@
 azure:
   faceAPIkey : 938278b95d874adca1434f63824b293a
-  cvAPIkey : 2d4eb461ef394226b3ca60739d2d8f0d
+  cvAPIkey : a05401654620433788e41c4dc60c5fe4
 
 mysql:
   username : aravindbs@watchdogsok
@@ -14,7 +14,7 @@ azure-blob :
   account_key : O2HPAwt/M4xs2dQ+zyLTjflg/u29v8cI3Hk0/ClLUskbwTy2SMk2kE9HQL5yYMudBnu5RBKV5ZIAcfqQMfjBfw==
 
 IPcam :
-  hostIP : '192.168.43.1:8180'
+  hostIP : '192.168.31.116:8080'
 
   
 

@@ -3,12 +3,12 @@ import imutils
 import cv2
 from WindowManager import WindowManager
 
-def motion_detector(send_queue, cam_host=0):
+def motion_detector(send_queue, objectQueue, cam_host=0):
     prev_frame = None
 
     # loop over the frames of the video
     count = 0
-
+    print cam_host
     cam = cv2.VideoCapture(cam_host)
     windowManager = WindowManager("Live Feed")
     while True:
@@ -48,3 +48,4 @@ def motion_detector(send_queue, cam_host=0):
         if cnts:
             # print "occupied"
             send_queue.put(frame)
+            objectQueue.put(frame)

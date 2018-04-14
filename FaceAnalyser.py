@@ -1,10 +1,11 @@
 from faceVerify import face_verify
 import re
-import datetime
+from datetime import datetime
 from azure.storage.blob import BlockBlobService
 import MySQLdb
 import yaml
 from multiprocessing import Process
+import csv
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
@@ -47,9 +48,8 @@ def analyser(response_face_queue, user_name, cam_ID, cam_location):
         face_ids = []
         if response[0]:
             for face in response[0]:
-                print face
                 fid = str(face["faceId"])
-                # print fid
+                
                 face_ids.append(fid)
                 verified = face_verify(face_ids, face_analyser.user_name)
                 # print type ( verified )
@@ -64,10 +64,23 @@ def analyser(response_face_queue, user_name, cam_ID, cam_location):
                                 print face_analyser.database[found]
 
                         else:
+                            print "Face not authorized"
                             timestamp = str(datetime.now())
                             filename = re.sub(r' ', '_', timestamp)
+                            fieldnames = ['faceId', 'timestamp']
                             # print filename
+                            image_file = open('unAuthFaces/{}.jpg'.format(filename) , 'wb')
+                            csv_file = open('unAuthFaces/data.csv', 'w')
+                            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                            writer.writeheader()
+                            writer.writerow({'faceId': face['faceId'], 'timestamp': filename})
 
+                            csv_file.close()
+                            image_file.write(response[1])
+                            
+                            image_file.close()
+                           
+                            #saves unauthimage in local directory
                             face_analyser.block_blob_service.create_blob_from_bytes('unauthorized', filename, response[1])
                             url = "https://watchdogsok.blob.core.windows.net/unauthorized/%s" % filename
                             query_send_unauth = """
@@ -78,7 +91,7 @@ values('%s', '%s', '%s' , '%s', '%s', '%s')""" % (face_analyser.user_name, filen
                             face_analyser.cursor.execute(query_send_unauth)
                             face_analyser.db.commit()
                             # print cursor.fetchall()
-                            print "Face not authorized"
+                            
         else:
             pass
             # print "No faces in frame"

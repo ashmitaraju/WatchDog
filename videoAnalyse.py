@@ -8,6 +8,7 @@ from motionDetector import motion_detector
 from face_detector import face_detector
 from send_faces import send_faces
 from FaceAnalyser import FaceAnalyser, analyser
+from object_detector import object_detector
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f)
@@ -35,20 +36,29 @@ if __name__ == '__main__':
     camID = raw_input("Enter ID : ")
     cameraLocation = camDict[camID]
 
-    cam_host = 0
-    # cam_host = 'http://' + config["IPcam"]["hostIP"] + '/videofeed'
+    if sys.argv[2] == '-i':
+        cam_host = 'http://' + config["IPcam"]["hostIP"] + '/videofeed'
+    elif sys.argv[2] == '-w':
+        cam_host = 0
+    
 
     sendQueue = Queue()
     responseQueue = Queue()
     responseFaceQueue = Queue()
+    objectQueue = Queue()
     processList = []
+    watchlist = ['people_', 'text_']
+    host = config["IPcam"]["hostIP"]
+    host_str = 'http://' + host + '/videofeed'
+    host_str = 0
     try:
-        motionDetect = Process(target=motion_detector, args=(sendQueue, cam_host))
+        motionDetect = Process(target=motion_detector, args=(sendQueue, objectQueue, cam_host))
         sendProcess = Process(target=face_detector, args=(sendQueue, responseQueue, True, '../images/detect_images/'))
         sendFacesProcess = Process(target=send_faces, args=(responseQueue, responseFaceQueue,))
         analyserProcess = Process(target=analyser, args=(responseFaceQueue, userName, camID, cameraLocation))
+        objectDetectProcess = Process(target=object_detector, args=(objectQueue, watchlist))
 
-        processList.extend([motionDetect, sendProcess, sendFacesProcess, analyserProcess])
+        processList.extend([motionDetect, sendProcess, sendFacesProcess, analyserProcess, objectDetectProcess])
 
         for proc in processList:
             proc.daemon = True
@@ -58,9 +68,6 @@ if __name__ == '__main__':
         for proc in processList:
             proc.start()
         # faceAnalyser.start()
-
-        host = config["IPcam"]["hostIP"]
-        host_str = 'http://' + host + '/videofeed'
         while True:
             pass
 
