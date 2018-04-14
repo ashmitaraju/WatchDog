@@ -47,7 +47,7 @@ if __name__ == '__main__':
     responseFaceQueue = Queue()
     objectQueue = Queue()
     processList = []
-    watchlist = ['people_', 'text_']
+    watchlist = ['people_', 'text_'] #Query from database 
     host = config["IPcam"]["hostIP"]
     host_str = 'http://' + host + '/videofeed'
     host_str = 0
