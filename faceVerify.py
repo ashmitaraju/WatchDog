@@ -24,7 +24,7 @@ def face_verify(face_ids, group_id):
     base_url = "https://westcentralus.api.cognitive.microsoft.com"
     endpoint = "/face/v1.0/identify"
     response = requests.post( base_url + endpoint, headers = headers, json = data)
-    print response.status_code
+    print response.json()
     return response.json()
 
 
@@ -47,4 +47,5 @@ def get_face(face):
     endpoint = "/face/v1.0/detect"
 
     response = requests.post( base_url + endpoint, params = params, headers = headers, data = data )
+    print response.json()
     return response.json()
