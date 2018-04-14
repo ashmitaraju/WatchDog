@@ -44,7 +44,7 @@ def motion_detector(send_queue, cam_host=0):
         # on thresholded image
         thresh = cv2.dilate(thresh, None, iterations=2)
         (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    
         if cnts:
             # print "occupied"
             send_queue.put(frame)

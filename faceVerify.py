@@ -13,16 +13,18 @@ def face_verify(face_ids, group_id):
         'Ocp-Apim-Subscription-Key': config['azure']['faceAPIkey'],
     }
 
-    ids = str(face_ids)
+    ids = face_ids
+    print type (ids)
     data = { 
         'personGroupId': group_id,
-        'face_ids': ids, 
+        'faceIds': ids, 
         'maxNumOfCandidatesReturned':1,
         'confidenceThreshold': 0.5 ,
     } 
     base_url = "https://westcentralus.api.cognitive.microsoft.com"
     endpoint = "/face/v1.0/identify"
-    response = requests.post( base_url + endpoint, headers = headers, data = data)
+    response = requests.post( base_url + endpoint, headers = headers, json = data)
+    print response.status_code
     return response.json()
 
 

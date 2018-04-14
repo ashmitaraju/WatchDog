@@ -14,7 +14,9 @@ web.py
 camera.py
 .vscode/
 test.py
-
+testNew.py
+testapi.py
+testsql.py
 
 # Created by https://www.gitignore.io/api/django,python,pycharm,virtualenv
 

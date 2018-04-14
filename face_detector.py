@@ -40,7 +40,7 @@ def detect_faces(image):
     end_time = datetime.now()
     micro_sec = (end_time - start_time).total_seconds()
     # print "dlib time/frame: " + str(micro_sec) + " | fps: " + str(1 / micro_sec)
-
+    print "found2"
     return face_frames
 
 
@@ -51,11 +51,15 @@ def face_detector(frame_queue, face_queue, display=False, save = False):
         if face_queue.full():
             continue
         frame = frame_queue.get()
+        print "found"
         face_coordinates = detect_faces(frame)
+        print face_coordinates
+       
 
         try:
-            for n, face_coordinates in enumerate(face_coordinates):
-                (x, y, w, h) = rect_to_bb(face_coordinates)
+            for n, coordinates in enumerate(face_coordinates):
+                print "found3"
+                (x, y, w, h) = rect_to_bb(coordinates)
                 face = frame[y - 10 :y+h +10, x -10:x+w+10 ]
                 if display:
                     frame_scanned = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
