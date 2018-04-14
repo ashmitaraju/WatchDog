@@ -1,7 +1,7 @@
 from frameGrabber import get_frame
 import imutils
 import cv2
-
+from WindowManager import WindowManager
 
 def motion_detector(send_queue, cam_host=0):
     prev_frame = None
@@ -10,11 +10,11 @@ def motion_detector(send_queue, cam_host=0):
     count = 0
 
     cam = cv2.VideoCapture(cam_host)
-
+    windowManager = WindowManager("Live Feed")
     while True:
         # grab the current frame and initialize the occupied/unoccupied
         # text
-        frame = get_frame(cam)
+        frame = get_frame(cam, windowManager)
 
         # if the frame could not be grabbed, then we have reached the end
         # of the video

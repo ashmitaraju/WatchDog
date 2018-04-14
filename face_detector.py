@@ -2,6 +2,7 @@ import cv2
 from datetime import datetime
 import dlib
 import time
+from WindowManager import WindowManager
 
 
 def rect_to_bb(rect):
@@ -44,7 +45,8 @@ def detect_faces(image):
     return face_frames
 
 
-def face_detector(frame_queue, face_queue, display=False, save = False):
+def face_detector(frame_queue, face_queue, display=False, save=False):
+    windowManager = WindowManager("Detected Face")
     while True:
         if frame_queue.empty():
             continue
@@ -63,8 +65,9 @@ def face_detector(frame_queue, face_queue, display=False, save = False):
                 face = frame[y - 10 :y+h +10, x -10:x+w+10 ]
                 if display:
                     frame_scanned = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                    cv2.imshow("Face Detector", frame_scanned)
-                    cv2.imshow("faces", face)
+                    #cv2.imshow(window, frame_scanned)
+                    #cv2.imshow("faces", face)
+                    windowManager.put(face)
                     cv2.waitKey(5)
                 if save:
                     img_path = str(save) + str(datetime.now()) + "-" + str(n) + ".jpg"
