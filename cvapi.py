@@ -15,7 +15,7 @@ def get_objects(image):
     }
 
     params = {
-        'visualFeatures' : 'Categories, Tags'
+        'visualFeatures' : 'Tags'
     }
 
     data = image

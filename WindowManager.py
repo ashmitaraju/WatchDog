@@ -21,6 +21,7 @@ class WindowManager(object):
     def __init__(self, name, size=(400, 400), pos=next_pos()):
         self.name = name
         self.size = size
+        cv2.startWindowThread()
         self.window = cv2.namedWindow(name, cv2.WINDOW_NORMAL | cv2.WINDOW_AUTOSIZE)
         cv2.resizeWindow(name, *size)
         # cv2.moveWindow(name, *pos)

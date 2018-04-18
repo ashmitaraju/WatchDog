@@ -1,6 +1,7 @@
 from frameGrabber import get_frame
 import imutils
 import cv2
+import re
 from WindowManager import WindowManager
 
 def motion_detector(send_queue, objectQueue, cam_host=0):

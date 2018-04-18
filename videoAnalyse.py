@@ -50,7 +50,7 @@ if __name__ == '__main__':
     print watchlist
 
 
-   
+
     print "ID\tCamera Location"
 
     camDict = {}
@@ -66,14 +66,14 @@ if __name__ == '__main__':
         cam_host = 'http://' + config["IPcam"]["hostIP"] + '/videofeed'
     elif sys.argv[2] == '-w':
         cam_host = 0
-    
+
     user = User(userName, email, camID, cameraLocation)
     sendQueue = Queue()
     responseQueue = Queue()
     responseFaceQueue = Queue()
     objectQueue = Queue()
     processList = []
-    #watchlist = ['people_', 'text_'] #Query from database 
+    #watchlist = ['people_', 'text_'] #Query from database
     host = config["IPcam"]["hostIP"]
     host_str = 'http://' + host + '/videofeed'
     host_str = 0
@@ -103,4 +103,3 @@ if __name__ == '__main__':
             proc.terminate()
         cv2.destroyAllWindows()
         exit(0)
-
