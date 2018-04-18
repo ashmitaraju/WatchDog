@@ -15,16 +15,42 @@ with open("config.yaml", "r") as f:
 
 userName = sys.argv[1]
 
+
+class User(object):
+    def __init__(self, username, email, camID, camLocation):
+        self.username = username
+        self.email = email
+        self.camID = camID
+        self.camLocation = camLocation
+
+
+
 # database = { '1d826b9b-747c-40b5-90fc-cb3087b03554' : 'kondu' , '0fe14084-9aea-4724-86c4-366d093b2980': 'ashmita'}
 
 if __name__ == '__main__':
-    query = """select * from camera where username = "%s" """ % userName
+    query_camera = """select * from camera where username = "%s" """ % userName
     sql = config['mysql']
     db = MySQLdb.connect(sql['server'], sql['username'], sql['password'], sql['database'])
     cursor = db.cursor()
-    cursor.execute(query)
+    cursor.execute(query_camera)
     cameras = cursor.fetchall()
 
+    db = MySQLdb.connect(sql['server'], sql['username'], sql['password'], sql['database'])
+    email_cursor = db.cursor()
+    query_mail = """select email from users where username = "%s" """ % userName
+    email_cursor.execute(query_mail)
+    email = email_cursor.fetchall()[0][0]
+    print email
+
+
+    watchlist_cursor = db.cursor()
+    query_watchlist = """select watchlist from watchlist where username = "%s" """ % userName
+    watchlist_cursor.execute(query_watchlist)
+    watchlist = watchlist_cursor.fetchall()[0][0]
+    print watchlist
+
+
+   
     print "ID\tCamera Location"
 
     camDict = {}
@@ -41,13 +67,13 @@ if __name__ == '__main__':
     elif sys.argv[2] == '-w':
         cam_host = 0
     
-
+    user = User(userName, email, camID, cameraLocation)
     sendQueue = Queue()
     responseQueue = Queue()
     responseFaceQueue = Queue()
     objectQueue = Queue()
     processList = []
-    watchlist = ['people_', 'text_'] #Query from database 
+    #watchlist = ['people_', 'text_'] #Query from database 
     host = config["IPcam"]["hostIP"]
     host_str = 'http://' + host + '/videofeed'
     host_str = 0
@@ -55,8 +81,8 @@ if __name__ == '__main__':
         motionDetect = Process(target=motion_detector, args=(sendQueue, objectQueue, cam_host))
         sendProcess = Process(target=face_detector, args=(sendQueue, responseQueue, True, '../images/detect_images/'))
         sendFacesProcess = Process(target=send_faces, args=(responseQueue, responseFaceQueue,))
-        analyserProcess = Process(target=analyser, args=(responseFaceQueue, userName, camID, cameraLocation))
-        objectDetectProcess = Process(target=object_detector, args=(objectQueue, watchlist))
+        analyserProcess = Process(target=analyser, args=(responseFaceQueue, userName, camID, cameraLocation, email))
+        objectDetectProcess = Process(target=object_detector, args=(objectQueue, watchlist, user))
 
         processList.extend([motionDetect, sendProcess, sendFacesProcess, analyserProcess, objectDetectProcess])
 
