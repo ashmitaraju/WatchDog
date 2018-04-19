@@ -40,14 +40,14 @@ if __name__ == '__main__':
     query_mail = """select email from users where username = "%s" """ % userName
     email_cursor.execute(query_mail)
     email = email_cursor.fetchall()[0][0]
-    print email
+
 
 
     watchlist_cursor = db.cursor()
     query_watchlist = """select watchlist from watchlist where username = "%s" """ % userName
     watchlist_cursor.execute(query_watchlist)
     watchlist = watchlist_cursor.fetchall()[0][0]
-    print watchlist
+
 
 
 

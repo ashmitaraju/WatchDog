@@ -40,9 +40,9 @@ def object_detector(frame_queue, watchlist, user):
         filename = re.sub(r' ', '_', timestamp)
         for tag in tags:
             if tag in watchlist:
-                block_blob_service.create_blob_from_bytes('objects', filename, frame_bytes)
                 image_file = open ('unAuthObjects/{}.jpg'.format(filename), 'w')
-                block_blob_service.create_blob_from_bytes('objects', filename, frame_bytes)
+                block_blob_service.create_blob_from_bytes('objects', filename + '.jpg', frame_bytes)
+                print tag + ' detected'
                 image_file.write (frame_bytes)
                 image_file.close()
                 url = "https://watchdogsok.blob.core.windows.net/objects/%s.jpg" % filename
