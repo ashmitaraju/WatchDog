@@ -19,6 +19,7 @@ testapi.py
 testsql.py
 unAuthFaces/
 unAuthObjects/
+config.yaml
 
 # Created by https://www.gitignore.io/api/django,python,pycharm,virtualenv
 
